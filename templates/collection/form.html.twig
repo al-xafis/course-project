@@ -1,0 +1,30 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}{{action|capitalize}} Collection{% endblock %}
+
+{% block body %}
+<div class="container mt-3">
+  <h2 class="mb-4">{{action|capitalize}} Collection</h2>
+
+  {{ form_start(form) }}
+      {{ form_errors(form) }}
+
+      {{ form_row(form.name) }}
+      {{ form_row(form.description) }}
+      {{ form_row(form.category) }}
+      {% if form.customItemAttributes|length == 0 %}
+      <label class="mt-2 mb-3"><strong>Custom Attributes</strong></label>
+      {% endif %}
+      <div class="custom-attributes-wrapper"
+        data-index="{{ form.customItemAttributes|length > 0 ? form.customItemAttributes|last.vars.name + 1 : 0 }}"
+        data-prototype="{{ form_widget(form.customItemAttributes.vars.prototype)|e('html_attr') }}">
+
+      </div>
+      <button type="button" class="add_item_link btn btn-success" data-collection-holder-class="customItemAttributes">Add an attribute</button>
+      {{ form_rest(form) }}
+
+      <button class="btn btn-primary mt-4" type="submit">{{action|capitalize}}</button>
+
+  {{ form_end(form) }}
+</div>
+{% endblock %}
