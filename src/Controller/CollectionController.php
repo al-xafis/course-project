@@ -24,7 +24,17 @@ class CollectionController extends AbstractController
     }
 
 
-    #[Route('/collections/create', name: 'app_collections_create', methods: [Request::METHOD_GET, Request::METHOD_POST])]
+    #[Route('/collection/{id}', name: 'app_collection')]
+    public function show(ItemCollection $itemCollection): Response
+    {
+
+        return $this->render('collection/collection.html.twig', [
+            'collection' => $itemCollection
+        ]);
+    }
+
+
+    #[Route('/collections/create', name: 'app_collection_create', methods: [Request::METHOD_GET, Request::METHOD_POST])]
     public function create(Request $request): Response
     {
         $collection = new ItemCollection();
@@ -45,7 +55,7 @@ class CollectionController extends AbstractController
     }
 
 
-    #[Route('/collections/{id}/update', name: 'app_collections_update', methods: [Request::METHOD_GET, Request::METHOD_POST])]
+    #[Route('/collections/{id}/update', name: 'app_collection_update', methods: [Request::METHOD_GET, Request::METHOD_POST])]
     public function update(Request $request, ItemCollection $collection): Response
     {
         $form = $this->createForm(CollectionType::class,  $collection);
@@ -64,7 +74,7 @@ class CollectionController extends AbstractController
     }
 
 
-    #[Route('/collections/{id}/delete', name: 'app_collections_delete', methods: [Request::METHOD_GET, Request::METHOD_POST])]
+    #[Route('/collections/{id}/delete', name: 'app_collection_delete', methods: [Request::METHOD_GET, Request::METHOD_POST])]
     public function delete(ItemCollection $collection): Response
     {
         $this->entityManager->remove($collection);

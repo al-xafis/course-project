@@ -24,8 +24,17 @@ class ItemController extends AbstractController
         ]);
     }
 
+    #[Route('/item/{id}', name: 'app_item')]
+    public function show(Item $item): Response
+    {
 
-    #[Route('/items/create', name: 'app_items_create')]
+        return $this->render('item/item.html.twig', [
+            'item' => $item
+        ]);
+    }
+
+
+    #[Route('/items/create', name: 'app_item_create')]
     public function create(Request $request): Response
     {
 
@@ -47,7 +56,7 @@ class ItemController extends AbstractController
     }
 
 
-    #[Route('/items/{id}/update', name: 'app_items_update')]
+    #[Route('/items/{id}/update', name: 'app_item_update')]
     public function update(Request $request, Item $item): Response
     {
 
@@ -67,7 +76,7 @@ class ItemController extends AbstractController
     }
 
 
-    #[Route('/items/{id}/delete', name: 'app_items_delete')]
+    #[Route('/items/{id}/delete', name: 'app_item_delete')]
     public function delete(Item $item): Response
     {
         $this->entityManager->remove($item);

@@ -1,0 +1,13 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Collection{% endblock %}
+
+{% block body %}
+<div class="container">
+  <h2>{{collection.name}}</h2>
+  <p>{{collection.description}}</p>
+  <p>{{collection.category.name}}</p>
+  <a class="btn btn-primary" href="{{ path('app_collection_update', {id: collection.id}) }}">Edit</a>
+  <a class="btn btn-danger" href="{{ path('app_collection_delete', {id: collection.id}) }}">Delete</a>
+</div>
+{% endblock %}
