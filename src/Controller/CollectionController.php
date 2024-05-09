@@ -15,7 +15,7 @@ class CollectionController extends AbstractController
     public function __construct(private EntityManagerInterface $entityManager) {
     }
 
-    #[Route('/collection', name: 'app_collection')]
+    #[Route('/collections', name: 'app_collections')]
     public function index(): Response
     {
         return $this->render('collection/index.html.twig', [
@@ -23,7 +23,8 @@ class CollectionController extends AbstractController
         ]);
     }
 
-    #[Route('/collections/create', name: 'app_collection_create', methods: [Request::METHOD_GET, Request::METHOD_POST])]
+
+    #[Route('/collections/create', name: 'app_collections_create', methods: [Request::METHOD_GET, Request::METHOD_POST])]
     public function create(Request $request): Response
     {
         $collection = new ItemCollection();
@@ -34,7 +35,6 @@ class CollectionController extends AbstractController
         if ($form->isSubmitted() && $form->isValid()) {
             $this->entityManager->persist($collection);
             $this->entityManager->flush();
-
             $this->addFlash('success', 'Collection successfully created');
         }
 
@@ -44,16 +44,15 @@ class CollectionController extends AbstractController
         ]);
     }
 
-    #[Route('/collections/{id}/update', name: 'app_collection_update', methods: [Request::METHOD_GET, Request::METHOD_POST])]
+
+    #[Route('/collections/{id}/update', name: 'app_collections_update', methods: [Request::METHOD_GET, Request::METHOD_POST])]
     public function update(Request $request, ItemCollection $collection): Response
     {
-
         $form = $this->createForm(CollectionType::class,  $collection);
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
             $this->entityManager->flush();
-
             $this->addFlash('success', 'Collection successfully updated');
         }
 
@@ -62,5 +61,16 @@ class CollectionController extends AbstractController
             'form' => $form,
             '$collection' => $collection
         ]);
+    }
+
+
+    #[Route('/collections/{id}/delete', name: 'app_collections_delete', methods: [Request::METHOD_GET, Request::METHOD_POST])]
+    public function delete(ItemCollection $collection): Response
+    {
+        $this->entityManager->remove($collection);
+        $this->entityManager->flush();
+        $this->addFlash('success', 'Collection successfully deleted');
+
+        return $this->redirectToRoute('app_collections');
     }
 }

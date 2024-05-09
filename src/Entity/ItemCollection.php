@@ -38,11 +38,18 @@ class ItemCollection
     #[CollectionCustomAttribute(maxItemsPerType: 2)]
     private Collection $customItemAttributes;
 
+    /**
+     * @var Collection<int, Item>
+     */
+    #[ORM\OneToMany(targetEntity: Item::class, mappedBy: 'itemCollection', orphanRemoval: true)]
+    private Collection $items;
+
 
 
     public function __construct()
     {
         $this->customItemAttributes = new ArrayCollection();
+        $this->items = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -109,6 +116,36 @@ class ItemCollection
         if ($this->customItemAttributes->removeElement($customItemAttribute)) {
             if ($customItemAttribute->getItemCollection() === $this) {
                 $customItemAttribute->setItemCollection(null);
+            }
+        }
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, Item>
+     */
+    public function getItems(): Collection
+    {
+        return $this->items;
+    }
+
+    public function addItem(Item $item): static
+    {
+        if (!$this->items->contains($item)) {
+            $this->items->add($item);
+            $item->setItemCollection($this);
+        }
+
+        return $this;
+    }
+
+    public function removeItem(Item $item): static
+    {
+        if ($this->items->removeElement($item)) {
+            // set the owning side to null (unless already changed)
+            if ($item->getItemCollection() === $this) {
+                $item->setItemCollection(null);
             }
         }
 
