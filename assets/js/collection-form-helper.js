@@ -2,9 +2,16 @@ document.addEventListener("DOMContentLoaded", () => {
   document.querySelectorAll(".add_item_link").forEach((btn) => {
     btn.addEventListener("click", addFormToCollection);
   });
+
+  document
+    .querySelectorAll(".custom-attributes-wrapper .item")
+    .forEach((row) => {
+      addRemoveFormAttribute(row);
+    });
 });
 
 function addFormToCollection(e) {
+  console.log("shoo");
   const collectionHolder = document.querySelector(".custom-attributes-wrapper");
 
   const item = document.createElement("div");

@@ -5,6 +5,7 @@ namespace App\Entity;
 use App\Enum\EnumCustomItemAttribute;
 use App\Repository\CustomItemAttributeRepository;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Validator\Constraints as Assert;
 
 #[ORM\Entity(repositoryClass: CustomItemAttributeRepository::class)]
 class CustomItemAttribute
@@ -15,9 +16,12 @@ class CustomItemAttribute
     private ?int $id = null;
 
     #[ORM\Column(length: 100)]
+    #[Assert\NotBlank()]
+    #[Assert\Length(min: 2)]
     private ?string $name = null;
 
     #[ORM\Column(length: 10, enumType: EnumCustomItemAttribute::class)]
+    #[Assert\Type(type: EnumCustomItemAttribute::class)]
     private ?EnumCustomItemAttribute $type = null;
 
     #[ORM\ManyToOne(inversedBy: 'customItemAttributes')]
@@ -42,7 +46,7 @@ class CustomItemAttribute
         return $this;
     }
 
-    public function getType(): ?string
+    public function getType(): ?EnumCustomItemAttribute
     {
         return $this->type;
     }

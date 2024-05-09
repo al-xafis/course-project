@@ -18,12 +18,16 @@
       <div class="custom-attributes-wrapper"
         data-index="{{ form.customItemAttributes|length > 0 ? form.customItemAttributes|last.vars.name + 1 : 0 }}"
         data-prototype="{{ form_widget(form.customItemAttributes.vars.prototype)|e('html_attr') }}">
-
+        {% for customItemAttribute in form.customItemAttributes %}
+        <div class="item">
+            {{form_row(customItemAttribute)}}
+        </div>
+        {% endfor %}
       </div>
-      <button type="button" class="add_item_link btn btn-success" data-collection-holder-class="customItemAttributes">Add an attribute</button>
+      <button type="button" class="add_item_link btn btn-success d-block" data-collection-holder-class="customItemAttributes">Add an attribute</button>
       {{ form_rest(form) }}
 
-      <button class="btn btn-primary mt-4" type="submit">{{action|capitalize}}</button>
+      <button class="btn btn-primary mt-4" type="submit" formnovalidate>{{action|capitalize}}</button>
 
   {{ form_end(form) }}
 </div>

@@ -1,6 +1,6 @@
-import "./bootstrap.js";
 import "bootstrap/dist/css/bootstrap.min.css";
-import "./helpers/collection-form-helper.js";
+import "./js/collection-form-helper.js";
+console.log("hey");
 
 /*
  * Welcome to your app's main JavaScript file!
