@@ -4,6 +4,7 @@ namespace App\Controller;
 
 use App\Entity\Item;
 use App\Form\ItemType;
+use Doctrine\DBAL\Types\TextType;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
@@ -40,10 +41,16 @@ class ItemController extends AbstractController
 
         $item = new Item();
 
-        $form = $this->createForm(ItemType::class,  $item);
+        $form = $this->createForm(ItemType::class,  $item, ['action' => $this->generateUrl('app_item_create')]);
+        $form->add('sd', null, ['mapped' => false]);
         $form->handleRequest($request);
 
+        // $form->get('test')->setData('sata');
+
+
+
         if ($form->isSubmitted() && $form->isValid()) {
+            // dd($form->get('sd'));
             $this->entityManager->persist($item);
             $this->entityManager->flush();
             $this->addFlash('success', 'Item successfully created');

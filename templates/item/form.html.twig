@@ -3,13 +3,16 @@
 {% block title %}{{action|capitalize}} Item{% endblock %}
 
 {% block body %}
-<div class="container mt-3">
+<div class="container mt-3 mb-5">
   <h2 class="mb-4">{{action|capitalize}} Item</h2>
 
   {{ form_start(form) }}
       {{ form_errors(form) }}
       {{ form_row(form.name) }}
-
+      {{ form_row(form.tags) }}
+      {{ form_row(form.itemCollection) }}
+      <div class="custom_attributes"></div>
+      {# {{ form_row() }} #}
       {{ form_rest(form) }}
 
       <button class="btn btn-primary mt-4" type="submit" formnovalidate>{{action|capitalize}}</button>
