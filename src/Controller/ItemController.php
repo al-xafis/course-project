@@ -4,6 +4,8 @@ namespace App\Controller;
 
 use App\Entity\Item;
 use App\Form\ItemType;
+use App\Form\Type\CustomCollectionType;
+use App\Repository\ItemCollectionRepository;
 use Doctrine\DBAL\Types\TextType;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -35,22 +37,25 @@ class ItemController extends AbstractController
     }
 
 
-    #[Route('/items/create', name: 'app_item_create')]
-    public function create(Request $request): Response
+
+    #[Route('/items/create', name: 'app_item_create', methods: ['POST', 'GET'])]
+    public function create(Request $request, ItemCollectionRepository $rep): Response
     {
 
         $item = new Item();
 
-        $form = $this->createForm(ItemType::class,  $item, ['action' => $this->generateUrl('app_item_create')]);
-        $form->add('sd', null, ['mapped' => false]);
+        $form = $this->createForm(ItemType::class,  $item, ['action' => $this->generateUrl('app_item_create'), 'allow_extra_fields' => true] );
+
+
         $form->handleRequest($request);
 
-        // $form->get('test')->setData('sata');
-
-
+        // $customAttributes = $request->request->all();
+        // foreach($customAttributes as $attr) {
+        //     dump($attr);
+        // }
 
         if ($form->isSubmitted() && $form->isValid()) {
-            // dd($form->get('sd'));
+            // dd($form->get('Author'));
             $this->entityManager->persist($item);
             $this->entityManager->flush();
             $this->addFlash('success', 'Item successfully created');

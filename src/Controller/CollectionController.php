@@ -4,8 +4,10 @@ namespace App\Controller;
 
 use App\Entity\ItemCollection;
 use App\Form\CollectionType;
+use App\Repository\ItemCollectionRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
@@ -24,6 +26,26 @@ class CollectionController extends AbstractController
     }
 
 
+    #[Route('/collection/get', name: 'app_collection_get', methods: ['POST'])]
+    public function sendCollection(Request $request, ItemCollectionRepository $rep): Response
+    {
+
+        $id = $request->request->get('collectionId');
+        if ($id) {
+            $collection = $rep->find($id);
+            $customItemAttributes = $collection->getCustomItemAttributes()->getValues();
+            $response = [];
+            foreach ($customItemAttributes as $attribute) {
+                $response[] = ['name' => $attribute->getName(), 'type'=>$attribute->getType()];
+            }
+            return new JsonResponse($response);
+        }
+
+        return new Response('ok');
+
+
+    }
+
     #[Route('/collection/{id}', name: 'app_collection')]
     public function show(ItemCollection $itemCollection): Response
     {
@@ -32,6 +54,8 @@ class CollectionController extends AbstractController
             'collection' => $itemCollection
         ]);
     }
+
+
 
 
     #[Route('/collections/create', name: 'app_collection_create', methods: [Request::METHOD_GET, Request::METHOD_POST])]

@@ -11,7 +11,6 @@ document.addEventListener("DOMContentLoaded", () => {
 });
 
 function addFormToCollection(e) {
-  console.log("shoo");
   const collectionHolder = document.querySelector(".custom-attributes-wrapper");
 
   const item = document.createElement("div");
