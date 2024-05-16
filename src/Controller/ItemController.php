@@ -3,7 +3,9 @@
 namespace App\Controller;
 
 use App\Entity\Item;
+use App\Entity\ItemAttribute;
 use App\Form\ItemType;
+use App\Form\ItemUpdateType;
 use App\Form\Type\CustomCollectionType;
 use App\Repository\ItemCollectionRepository;
 use Doctrine\DBAL\Types\TextType;
@@ -30,7 +32,7 @@ class ItemController extends AbstractController
     #[Route('/item/{id}', name: 'app_item')]
     public function show(Item $item): Response
     {
-
+        // dd($item);
         return $this->render('item/item.html.twig', [
             'item' => $item
         ]);
@@ -41,21 +43,41 @@ class ItemController extends AbstractController
     #[Route('/items/create', name: 'app_item_create', methods: ['POST', 'GET'])]
     public function create(Request $request, ItemCollectionRepository $rep): Response
     {
+        $itemCollection = $rep->findAll();
+        if (!$itemCollection) {
+            $this->addFlash('warning', 'Please create at least one collection before creating an Item');
+            return $this->redirectToRoute('app_home');
+        }
+
 
         $item = new Item();
 
         $form = $this->createForm(ItemType::class,  $item, ['action' => $this->generateUrl('app_item_create'), 'allow_extra_fields' => true] );
 
+        $metadata = $this->entityManager->getClassMetadata(Item::class);
+        $keys = $metadata->getFieldNames();
+        $keys[] = "itemCollection";
+        $keys[] = '_token';
+        $keys = array_flip($keys);
+
+        $requestAttributes = $request->request->all();
+        $itemAttributes = $requestAttributes['item'] ?? null;
+        if (isset($itemAttributes)) {
+            $customAttributes = array_diff_key($itemAttributes, $keys);
+        }
 
         $form->handleRequest($request);
 
-        // $customAttributes = $request->request->all();
-        // foreach($customAttributes as $attr) {
-        //     dump($attr);
-        // }
-
         if ($form->isSubmitted() && $form->isValid()) {
-            // dd($form->get('Author'));
+            if (isset($customAttributes)) {
+                foreach($customAttributes as $name => $value) {
+                    $itemAttribute = new ItemAttribute();
+                    $itemAttribute->setName($name);
+                    $itemAttribute->setValue($value);
+                    $item->addItemAttribute($itemAttribute);
+                }
+            }
+
             $this->entityManager->persist($item);
             $this->entityManager->flush();
             $this->addFlash('success', 'Item successfully created');
@@ -71,16 +93,47 @@ class ItemController extends AbstractController
     #[Route('/items/{id}/update', name: 'app_item_update')]
     public function update(Request $request, Item $item): Response
     {
+        $form = $this->createForm(ItemUpdateType::class,  $item, ['allow_extra_fields' => true]);
 
-        $form = $this->createForm(ItemType::class,  $item);
-        $form->handleRequest($request);
+        $metadata = $this->entityManager->getClassMetadata(Item::class);
+        $keys = $metadata->getFieldNames();
+        $keys[] = "itemCollection";
+        $keys[] = '_token';
+        $keysToBeRemoved = array_flip($keys);
 
-        if ($form->isSubmitted() && $form->isValid()) {
-            $this->entityManager->flush();
-            $this->addFlash('success', 'Item successfully updated');
+        $requestAttributes = $request->request->all();
+        $itemAttributes = $requestAttributes['item_update'] ?? null;
+        if (isset($itemAttributes)) {
+            $customAttributes = array_diff_key($itemAttributes, $keysToBeRemoved);
         }
 
-        return $this->render('item/form.html.twig', [
+        $oldCustomAttributes = $item->getItemAttributes();
+
+        $form->handleRequest($request);
+
+
+        if ($form->isSubmitted() && $form->isValid()) {
+            // dump($request->request->all());
+            // dd($customAttributes);
+            foreach($oldCustomAttributes as $oldItemAttribute) {
+                $item->removeItemAttribute($oldItemAttribute);
+            }
+            if (isset($customAttributes)) {
+                foreach($customAttributes as $name => $value) {
+                    $itemAttribute = new ItemAttribute();
+                    $itemAttribute->setName($name);
+                    $itemAttribute->setValue($value);
+                    $item->addItemAttribute($itemAttribute);
+                }
+            }
+
+            // $this->entityManager->persist($item);
+            $this->entityManager->flush();
+            $this->addFlash('success', 'Item successfully updated');
+            $this->redirectToRoute('app_items');
+        }
+        // dd($item->getItemAttributes()->getValues());
+        return $this->render('item/update.html.twig', [
             'form' => $form,
             'action' => 'update',
             'item' => $item

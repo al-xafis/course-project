@@ -41,7 +41,7 @@ class CollectionController extends AbstractController
             return new JsonResponse($response);
         }
 
-        return new Response('ok');
+        return new Response('No collection ID provided!');
 
 
     }

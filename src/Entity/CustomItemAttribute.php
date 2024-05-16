@@ -5,9 +5,11 @@ namespace App\Entity;
 use App\Enum\EnumCustomItemAttribute;
 use App\Repository\CustomItemAttributeRepository;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 use Symfony\Component\Validator\Constraints as Assert;
 
 #[ORM\Entity(repositoryClass: CustomItemAttributeRepository::class)]
+#[UniqueEntity('name')]
 class CustomItemAttribute
 {
     #[ORM\Id]

@@ -3,23 +3,19 @@
 namespace App\Form;
 
 use App\Entity\Item;
+use App\Entity\ItemAttribute;
 use App\Entity\ItemCollection;
-use App\Form\Type\CustomCollectionType;
-use App\Repository\ItemCollectionRepository;
-use Doctrine\DBAL\Types\BooleanType;
-use Doctrine\DBAL\Types\TextType;
 use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\CollectionType;
+use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\Form\FormEvent;
 use Symfony\Component\Form\FormEvents;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 
-class ItemType extends AbstractType
+class ItemUpdateType extends AbstractType
 {
-    public function __construct(private ItemCollectionRepository $ItemCollectionRepository){}
-
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
         $builder
@@ -29,8 +25,8 @@ class ItemType extends AbstractType
                 'class' => ItemCollection::class,
                 'choice_label' => 'name',
             ])
-            ;
 
+        ;
 
         $builder->get('itemCollection')->addEventListener(
             FormEvents::POST_SUBMIT,
@@ -51,47 +47,47 @@ class ItemType extends AbstractType
 
                 foreach($customItemAttributes->getValues() as $attribute) {
                     $name = $attribute->getName();
-                    $name_field = str_replace(' ', '_', $name);
-                    $form->getParent()->add($name_field, null, [
-                        'label' => $name,
-                        'attr' => ['class' => 'dynamic-field'],
+                    $name = strtolower(str_replace(' ', '_', $name));
+                    $name_label = ucfirst(strtolower(str_replace('_', ' ', $name)));
+
+
+                    dump($name, $name_label);
+                    $form->getParent()->add($name, null, [
+                        'label' => $name_label,
+                        'attr' => ['class' => 'dynamic-field post-set'],
                         'mapped' => false,
                     ]);
                 }
-
             }
+
+
         );
 
+        $builder->addEventListener(FormEvents::PRE_SET_DATA, function (FormEvent $event): void {
+            $form = $event->getForm();
+            $data = $event->getData();
+            $itemAttributes = $data->getItemAttributes()->getValues();
+            $collectionId = $data->getItemCollection()->getId();
+            if(isset($itemAttributes)) {
+                foreach($itemAttributes as $attribute) {
 
-
-
-
-
-        $builder->addEventListener(
-            FormEvents::POST_SET_DATA,
-            function (FormEvent $event): void {
-                $form = $event->getForm();
-                $data = $event->getData();
-
-                $collection = $this->ItemCollectionRepository->findAll()[0];
-                $collectionId = $collection->getId();
-                if (isset($collection)) {
-                    $customItemAttributes = $collection->getCustomItemAttributes()->getValues();
-                }
-
-                foreach($customItemAttributes as $attribute) {
-                    $name = $attribute->getName();
-                    $name_field = str_replace(' ', '_', $name);
-                    $form->add($name_field, null, [
-                        'label' => $name,
-                        'attr' => ['class' => 'dynamic-field pre-set'],
-                        'row_attr' => ['pre-set' => 'true', 'collection-id' => $collectionId],
-                        'mapped' => false,
-                    ]);
+                    $name = strtolower(str_replace(' ', '_', $attribute->getName()));
+                    dump($name);
+                    if (isset($attribute)) {
+                        if (!isset($form[$name])) {
+                            dump($attribute->getValue());
+                            $form->add($name, null, [
+                                'data' => $attribute->getValue(),
+                                'attr' => ['class' => 'dynamic-field pre-set'],
+                                'row_attr' => ['pre-set' => 'true', 'collection-id' => $collectionId],
+                                'mapped' => false,
+                            ]);
+                        }
+                    }
                 }
 
             }
-        );
+        });
 
     }
 

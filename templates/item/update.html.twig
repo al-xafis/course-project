@@ -1,0 +1,95 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}{{action|capitalize}} Item{% endblock %}
+
+{% block body %}
+<div class="container mt-3 mb-5" style="position: relative">
+  <h2 class="mb-4">{{action|capitalize}} Item</h2>
+
+  {{ form_start(form) }}
+      {{ form_errors(form) }}
+      {{ form_row(form.name) }}
+      {{ form_row(form.tags) }}
+      {{ form_row(form.itemCollection) }}
+
+      {{ form_rest(form) }}
+
+
+  <button class="btn btn-primary mt-4 very-bottom" type="submit" formnovalidate>{{action|capitalize}}</button>
+  {{ form_end(form) }}
+
+</div>
+<script>
+
+document.addEventListener("DOMContentLoaded", () => {
+  let item_collection = document.querySelector("#item_update_itemCollection");
+  console.log(item_collection.value)
+
+  const updateForm = async (data, url, method) => {
+    const req = await fetch(url, {
+      method: method,
+      body: data,
+      headers: {
+        "Content-Type": "application/x-www-form-urlencoded",
+        charset: "utf-8",
+      },
+    });
+
+    const text = await req.json();
+
+    return text;
+  };
+
+  const parseTextToHtml = (text) => {
+    const parser = new DOMParser();
+    const html = parser.parseFromString(text, "text/html");
+
+    return html;
+  };
+
+  item_collection.addEventListener("change", async (e) => {
+    let form = item_collection.closest("form");
+    let requestBody = "collectionId" + "=" + e.target.value;
+    let action = form.getAttribute("action");
+    let method = form.getAttribute("method");
+
+    let customAttributes = await updateForm(
+      requestBody,
+      "/collection/get",
+      method
+    );
+    console.log(customAttributes);
+
+
+    let nameField = form.querySelector("#item_name");
+
+    let oldCustomAttributes = form.querySelectorAll(".dynamic-field");
+    for (let attribute of oldCustomAttributes) {
+      attribute.closest("div").remove();
+    }
+
+    for (let attribute of customAttributes) {
+      let newInputWrapper = document.createElement("div");
+      newInputWrapper.classList.add("mb-3");
+
+      let newLabel = document.createElement("label");
+      newLabel.classList.add("form-label");
+      let name = attribute["name"].split('_').join(' ').toLowerCase();
+      name = name.charAt(0).toUpperCase() + name.slice(1);
+      newLabel.innerText = name;
+      newInputWrapper.appendChild(newLabel);
+
+      let newInput = document.createElement("input");
+      newInput.id = "item_update_" + attribute["name"].toLowerCase();
+      newInput.name = "item_update[" + attribute["name"].toLowerCase() + "]";
+      newInput.classList.add("dynamic-field", "form-control");
+      newInputWrapper.appendChild(newInput);
+      form.appendChild(newInputWrapper);
+      console.log(newInput);
+    }
+
+  });
+});
+
+</script>
+{% endblock %}
