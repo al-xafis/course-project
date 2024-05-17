@@ -21,8 +21,6 @@ class CollectionCustomAttributeValidator extends ConstraintValidator
             $countPerType[$attribute->getType()->value] = isset($countPerType[$attribute->getType()->value]) ? ++$countPerType[$attribute->getType()->value] : 1;
         }
 
-        // dd($countPerType);
-
         foreach($countPerType as $type => $count) {
             if ($count > $constraint->maxItemsPerType) {
                 $this->context->buildViolation($constraint->message)

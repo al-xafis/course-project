@@ -4,6 +4,7 @@ namespace App\Entity;
 
 use App\Repository\ItemCollectionRepository;
 use App\Validator\CollectionCustomAttribute;
+use App\Validator\CollectionCustomAttributeUnique;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\DBAL\Types\Types;
@@ -36,6 +37,7 @@ class ItemCollection
     #[ORM\OneToMany(targetEntity: CustomItemAttribute::class, mappedBy: 'itemCollection', cascade: ["persist"], orphanRemoval: true)]
     #[Assert\Valid()]
     #[CollectionCustomAttribute(maxItemsPerType: 2)]
+    #[CollectionCustomAttributeUnique()]
     private Collection $customItemAttributes;
 
     /**
