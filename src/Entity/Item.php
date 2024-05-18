@@ -8,6 +8,7 @@ use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Validator\Constraints as Assert;
 
+#[ORM\Index(name: "item_search_idx", columns: ["name"], flags: ['fulltext'])]
 #[ORM\Entity(repositoryClass: ItemRepository::class)]
 class Item
 {
