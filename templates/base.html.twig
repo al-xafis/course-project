@@ -23,23 +23,93 @@
                 <li><a href="#" class="nav-link px-2">About</a></li>
             </ul>
 
-            <div class="col-md-4 text-end d-flex justify-content-center align-items-center gap-2">
-                <input type="search" class="form-control" placeholder="Search...">
+            <div class="col-md-5 text-end d-flex justify-content-center align-items-center gap-2">
+                <input type="search" id="search" class="form-control" placeholder="Search...">
                 <button type="button" class="btn btn-outline-primary">Login</button>
-                <button type="button" class="btn btn-primary" style="width:140px;">Sign-up</button>
+                <button type="button" class="btn btn-primary" style="width:190px;">Sign-up</button>
             </div>
             </header>
         </div>
     </header>
     <body>
         <div class="container flash-messages">
-        {% for label, messages in app.flashes(['success', 'warning']) %}
-                {% for message in messages %}
-                    <div class="alert alert-{{label}}">{{message}}</div>
-                {% endfor %}
-        {% endfor %}
+            {% for label, messages in app.flashes(['success', 'warning']) %}
+                    {% for message in messages %}
+                        <div class="alert alert-{{label}}">{{message}}</div>
+                    {% endfor %}
+            {% endfor %}
+        </div>
+        <div class="search d-none">
+            <div class="container">
+                <div class="search-wrapper">
+
+                    <ul class="item_list p-2">
+                        {# <li class="item border p-3 mb-3">
+                            <a class="text-decoration-none" href="1"><p>Test</p></a>
+                        </li> #}
+
+                    </ul>
+                </div>
+            </div>
         </div>
         {% block body %}{% endblock %}
+        <script>
+
+            const getData = async (url) => {
+                const req = await fetch(url, {
+                method: 'GET',
+                headers: {
+                    "Content-Type": "application/json",
+                    charset: "utf-8",
+                },
+                });
+
+                const res = await req.json();
+
+                return res;
+            };
+            let searchWrapper = document.querySelector('.search');
+            let searchInput = document.getElementById('search');
+            let itemList = document.querySelector('.item_list');
+            searchInput.addEventListener('input', async (e) => {
+                console.log(e.target.value.length)
+                if (e.target.value.length === 0) {
+                    searchWrapper.classList.add('d-none');
+                } else {
+                    searchWrapper.classList.remove('d-none');
+                }
+
+                console.log(e.target.value);
+                itemList.innerHTML = null;
+                let res = await getData("/search?" + new URLSearchParams({query: e.target.value}));
+                for (let item of res) {
+                    let li = document.createElement('li');
+                    let a = document.createElement('a');
+                    let p = document.createElement('p');
+                    li.classList.add('item', 'border', 'p-3', 'mb-3');
+                    a.classList.add('text-decoration-none');
+                    if (item['entity'] == 'item') {
+                        a.href="/item/" + item['id'];
+                    } else if (item['entity'] == 'collection') {
+                        a.href="/collection/" + item['id'];
+                    }
+                    p.innerText = item['name'];
+                    li.appendChild(a);
+                    a.appendChild(p);
+                    itemList.appendChild(li);
+
+                }
+            })
+
+            document.addEventListener('click', event => {
+                if (!searchWrapper.classList.contains('d-none')) {
+                    searchWrapper.classList.add('d-none');
+                }
+            });
+
+
+
+        </script>
     </body>
 </html>
 

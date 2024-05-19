@@ -11,6 +11,7 @@ use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Validator\Constraints as Assert;
 
+#[ORM\Index(name: "itemCollection_search_idx", columns: ["name"], flags: ['fulltext'])]
 #[ORM\Entity(repositoryClass: ItemCollectionRepository::class)]
 class ItemCollection
 {

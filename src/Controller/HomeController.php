@@ -29,24 +29,21 @@ class HomeController extends AbstractController
     }
 
     #[Route('/search', name: 'app_search')]
-    public function search(Request $request, ItemRepository $itemRepository, EntityManagerInterface $em)
+    public function search(Request $request, ItemRepository $itemRepository, ItemCollectionRepository $itemCollectionRepository)
     {
-        // $query = $request->query->get('query', '');
-        // $results = $query ? $itemRepository->search($query) : [];
-        // return $results;
-
-        // return $this->render('search/search.html.twig', [
-        //     'results' => $results,
-        // ]);
         $query = ($request->query->get('query'));
-        $queryBuilder = $em->getRepository(Item::class)->search($query);
-        dd($queryBuilder);
-        // $query = $em->createQuery('SELECT i.name FROM App\Entity\Item i where MATCH_AGAINST (i.name, viper) > 0');
-        // $result = $query->getResult();
+        $items = $itemRepository->search($query);
+        $collections = $itemCollectionRepository->search($query);
+        $result = [];
+        foreach($items as $value) {
+            $item = ['id' => $value->getId(), 'entity' => 'item', 'name' => $value->getName()];
+            $result[] = $item;
+        }
+        foreach($collections as $value) {
+            $collection = ['id' => $value->getId(), 'entity' => 'collection', 'name' => $value->getName()];
+            $result[] = $collection;
+        }
+
         return new JsonResponse($result);
-
-
-
-
     }
 }

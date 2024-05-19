@@ -16,6 +16,14 @@ class ItemCollectionRepository extends ServiceEntityRepository
         parent::__construct($registry, ItemCollection::class);
     }
 
+    public function search($query) {
+        return $this->createQueryBuilder('c')
+            ->add('where', 'MATCH_AGAINST(c.name, :query) > 0')
+            ->setParameter('query', $query)
+            ->getQuery()
+            ->getResult();
+    }
+
     //    /**
     //     * @return ItemCollection[] Returns an array of ItemCollection objects
     //     */

@@ -34,3 +34,24 @@
   position: absolute;
   bottom: -70px;
 }
+
+.search {
+}
+.search-wrapper {
+  min-height: 500px;
+  border: 2px solid #eee;
+}
+
+ul {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+p {
+  margin: 0;
+}
+
+.item a {
+  color: inherit;
+}
