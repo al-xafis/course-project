@@ -72,14 +72,12 @@
             let searchInput = document.getElementById('search');
             let itemList = document.querySelector('.item_list');
             searchInput.addEventListener('input', async (e) => {
-                console.log(e.target.value.length)
                 if (e.target.value.length === 0) {
                     searchWrapper.classList.add('d-none');
                 } else {
                     searchWrapper.classList.remove('d-none');
                 }
 
-                console.log(e.target.value);
                 itemList.innerHTML = null;
                 let res = await getData("/search?" + new URLSearchParams({query: e.target.value}));
                 for (let item of res) {
