@@ -16,15 +16,6 @@ class ItemRepository extends ServiceEntityRepository
         parent::__construct($registry, Item::class);
     }
 
-    //   public function search(string $query)
-    // {
-    //     return $this->createQueryBuilder('i')
-    //         ->where('MATCH (name) AGAINST (:query IN BOOLEAN MODE) > 0')
-    //         ->setParameter('query', $query)
-    //         ->getQuery()
-    //         ->getResult();
-    // }
-
     public function search($query) {
         return $this->createQueryBuilder('i')
             // ->addSelect("MATCH_AGAINST (i.name, :query 'IN NATURAL MODE') as score")

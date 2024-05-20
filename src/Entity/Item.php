@@ -22,9 +22,6 @@ class Item
     #[Assert\Length(min: 3)]
     private ?string $name = null;
 
-    #[ORM\Column(length: 255)]
-    #[Assert\NotBlank()]
-    private ?string $tags = null;
 
     #[ORM\ManyToOne(inversedBy: 'items')]
     #[ORM\JoinColumn(nullable: false)]
@@ -37,9 +34,17 @@ class Item
     #[ORM\OneToMany(targetEntity: ItemAttribute::class, mappedBy: 'Item', cascade: ["persist"], orphanRemoval: true)]
     private Collection $itemAttributes;
 
+    /**
+     * @var Collection<int, Tag>
+     */
+    #[ORM\OneToMany(targetEntity: Tag::class, mappedBy: 'item', orphanRemoval: true, cascade: ["persist"])]
+    private Collection $tags;
+
+
     public function __construct()
     {
         $this->itemAttributes = new ArrayCollection();
+        $this->tags = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -55,18 +60,6 @@ class Item
     public function setName(string $name): static
     {
         $this->name = $name;
-
-        return $this;
-    }
-
-    public function getTags(): ?string
-    {
-        return $this->tags;
-    }
-
-    public function setTags(string $tags): static
-    {
-        $this->tags = $tags;
 
         return $this;
     }
@@ -112,4 +105,35 @@ class Item
 
         return $this;
     }
+
+    /**
+     * @return Collection<int, Tag>
+     */
+    public function getTags(): Collection
+    {
+        return $this->tags;
+    }
+
+    public function addTag(Tag $tag): static
+    {
+        if (!$this->tags->contains($tag)) {
+            $this->tags->add($tag);
+            $tag->setItem($this);
+        }
+
+        return $this;
+    }
+
+    public function removeTag(Tag $tag): static
+    {
+        if ($this->tags->removeElement($tag)) {
+            // set the owning side to null (unless already changed)
+            if ($tag->getItem() === $this) {
+                $tag->setItem(null);
+            }
+        }
+
+        return $this;
+    }
+
 }

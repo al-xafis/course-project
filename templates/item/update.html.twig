@@ -9,9 +9,22 @@
   {{ form_start(form) }}
       {{ form_errors(form) }}
       {{ form_row(form.name) }}
-      {{ form_row(form.tags) }}
-      {{ form_row(form.itemCollection) }}
+      <label class="mt-2 mb-3"><strong>Tags</strong></label>
+      <div class="tags"
+        data-index="{{ form.tags|length > 0 ? form.tags|last.vars.name + 1 : 0 }}"
+        data-prototype="{{ form_widget(form.tags.vars.prototype)|e('html_attr') }}">
+        {% for tag in form.tags %}
+        <div class="item">
+            {{form_row(tag)}}
+        </div>
+        {% endfor %}
+      </div>
 
+      <button type="button" class="add_item_link btn btn-success d-block mb-4" data-collection-holder-class="tags">Add a tag</button>
+
+      {# {{form_row(form.tags)}} #}
+
+      {{ form_row(form.itemCollection) }}
       {{ form_rest(form) }}
 
 
@@ -22,8 +35,55 @@
 <script>
 
 document.addEventListener("DOMContentLoaded", () => {
+  // tags
+  document.querySelectorAll('.add_item_link').forEach(btn => {
+        btn.addEventListener("click", addFormToCollection)
+    });
+
+    document
+    .querySelectorAll('.tags .item')
+    .forEach((tag) => {
+        addTagFormDeleteLink(tag)
+    })
+
+    function addFormToCollection(e) {
+      const collectionHolder = document.querySelector('.tags');
+
+      const item = document.createElement('div');
+
+      item.innerHTML = collectionHolder
+        .dataset
+        .prototype
+        .replace(
+          /__name__/g,
+          collectionHolder.dataset.index
+        );
+
+      collectionHolder.appendChild(item);
+      collectionHolder.dataset.index++;
+
+      addTagFormDeleteLink(item);
+    };
+
+
+    function addTagFormDeleteLink(item) {
+        const removeFormButton = document.createElement('button');
+        removeFormButton.className = "btn btn-danger mb-3"
+        removeFormButton.innerText = 'Delete a tag';
+
+        item.append(removeFormButton);
+
+        removeFormButton.addEventListener('click', (e) => {
+            e.preventDefault();
+            // remove the li for the tag form
+            item.remove();
+        });
+    }
+
+
+  // -----------------
+  // Custom attributes
   let item_collection = document.querySelector("#item_update_itemCollection");
-  console.log(item_collection.value)
 
   const updateForm = async (data, url, method) => {
     const req = await fetch(url, {

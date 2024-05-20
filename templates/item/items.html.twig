@@ -1,0 +1,15 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Item{% endblock %}
+
+{% block body %}
+<div class="container">
+  {% if items %}
+  {% for item in items %}
+    {{item.name}}
+  {% endfor %}
+  {% else %}
+  No items
+  {% endif %}
+</div>
+{% endblock %}

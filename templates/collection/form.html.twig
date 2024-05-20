@@ -12,9 +12,7 @@
       {{ form_row(form.name) }}
       {{ form_row(form.description) }}
       {{ form_row(form.category) }}
-      {% if form.customItemAttributes|length == 0 %}
       <label class="mt-2 mb-3"><strong>Custom Attributes</strong></label>
-      {% endif %}
       <div class="custom-attributes-wrapper"
         data-index="{{ form.customItemAttributes|length > 0 ? form.customItemAttributes|last.vars.name + 1 : 0 }}"
         data-prototype="{{ form_widget(form.customItemAttributes.vars.prototype)|e('html_attr') }}">
@@ -31,4 +29,52 @@
 
   {{ form_end(form) }}
 </div>
+
+<script>
+
+document.addEventListener("DOMContentLoaded", () => {
+  document.querySelectorAll(".add_item_link").forEach((btn) => {
+    btn.addEventListener("click", addFormToCollection);
+  });
+
+  document
+    .querySelectorAll(".custom-attributes-wrapper .item")
+    .forEach((row) => {
+      addRemoveFormAttribute(row);
+    });
+});
+
+function addFormToCollection(e) {
+  const collectionHolder = document.querySelector(".custom-attributes-wrapper");
+
+  const item = document.createElement("div");
+  item.className = "item";
+
+  item.innerHTML = collectionHolder.dataset.prototype.replace(
+    /__name__/g,
+    collectionHolder.dataset.index
+  );
+
+  collectionHolder.appendChild(item);
+
+  collectionHolder.dataset.index++;
+
+  addRemoveFormAttribute(item);
+}
+
+function addRemoveFormAttribute(item) {
+  const removeFormButton = document.createElement("button");
+  removeFormButton.className = "btn btn-danger mb-3";
+  removeFormButton.innerText = "Delete an attribute";
+
+  item.append(removeFormButton);
+
+  removeFormButton.addEventListener("click", (e) => {
+    e.preventDefault();
+    item.remove();
+  });
+}
+
+
+</script>
 {% endblock %}

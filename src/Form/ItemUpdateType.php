@@ -20,7 +20,14 @@ class ItemUpdateType extends AbstractType
     {
         $builder
             ->add('name')
-            ->add('tags')
+            ->add('tags', CollectionType::class, [
+                'entry_type' => TagType::class,
+                'entry_options' => ['label' => false],
+                'label' => false,
+                'allow_add' => true,
+                'allow_delete' => true,
+                'by_reference' => false,
+            ])
             ->add('itemCollection', EntityType::class, [
                 'class' => ItemCollection::class,
                 'choice_label' => 'name',
@@ -50,8 +57,6 @@ class ItemUpdateType extends AbstractType
                     $name = strtolower(str_replace(' ', '_', $name));
                     $name_label = ucfirst(strtolower(str_replace('_', ' ', $name)));
 
-
-                    dump($name, $name_label);
                     $form->getParent()->add($name, null, [
                         'label' => $name_label,
                         'attr' => ['class' => 'dynamic-field post-set'],
@@ -72,10 +77,8 @@ class ItemUpdateType extends AbstractType
                 foreach($itemAttributes as $attribute) {
 
                     $name = strtolower(str_replace(' ', '_', $attribute->getName()));
-                    dump($name);
                     if (isset($attribute)) {
                         if (!isset($form[$name])) {
-                            dump($attribute->getValue());
                             $form->add($name, null, [
                                 'data' => $attribute->getValue(),
                                 'attr' => ['class' => 'dynamic-field pre-set'],

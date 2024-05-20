@@ -4,6 +4,7 @@ namespace App\Form;
 
 use App\Entity\Item;
 use App\Entity\ItemCollection;
+use App\Entity\Tag;
 use App\Form\Type\CustomCollectionType;
 use App\Repository\ItemCollectionRepository;
 use Doctrine\DBAL\Types\BooleanType;
@@ -24,7 +25,14 @@ class ItemType extends AbstractType
     {
         $builder
             ->add('name')
-            ->add('tags')
+            ->add('tags', CollectionType::class, [
+                'entry_type' => TagType::class,
+                'entry_options' => ['label' => false],
+                'label' => false,
+                'allow_add' => true,
+                'allow_delete' => true,
+                'by_reference' => false,
+            ])
             ->add('itemCollection', EntityType::class, [
                 'class' => ItemCollection::class,
                 'choice_label' => 'name',
@@ -61,10 +69,6 @@ class ItemType extends AbstractType
 
             }
         );
-
-
-
-
 
 
         $builder->addEventListener(

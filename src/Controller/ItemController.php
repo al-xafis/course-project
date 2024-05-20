@@ -8,6 +8,8 @@ use App\Form\ItemType;
 use App\Form\ItemUpdateType;
 use App\Form\Type\CustomCollectionType;
 use App\Repository\ItemCollectionRepository;
+use App\Repository\ItemRepository;
+use App\Repository\TagRepository;
 use Doctrine\DBAL\Types\TextType;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -26,6 +28,21 @@ class ItemController extends AbstractController
     {
         return $this->render('item/index.html.twig', [
             'controller_name' => 'ItemController',
+        ]);
+    }
+
+    #[Route('/items/search', name: 'app_items_by_tag')]
+    public function showByTag(Request $request, TagRepository $tagRepository, ItemRepository $itemRepository,): Response
+    {
+        $queryTag = ($request->query->get('tag'));
+        $tags = $tagRepository->findBy(['name' => $queryTag]);
+        $items = [];
+        foreach($tags as $tag) {
+            $items[] = $tag->getItem();
+        }
+
+        return $this->render('item/items.html.twig', [
+            'items' => $items
         ]);
     }
 
@@ -49,7 +66,6 @@ class ItemController extends AbstractController
             return $this->redirectToRoute('app_home');
         }
 
-
         $item = new Item();
 
         $form = $this->createForm(ItemType::class,  $item, ['action' => $this->generateUrl('app_item_create'), 'allow_extra_fields' => true] );
@@ -57,6 +73,7 @@ class ItemController extends AbstractController
         $metadata = $this->entityManager->getClassMetadata(Item::class);
         $keys = $metadata->getFieldNames();
         $keys[] = "itemCollection";
+        $keys[] = "tags";
         $keys[] = '_token';
         $keys = array_flip($keys);
 
@@ -98,6 +115,7 @@ class ItemController extends AbstractController
         $metadata = $this->entityManager->getClassMetadata(Item::class);
         $keys = $metadata->getFieldNames();
         $keys[] = "itemCollection";
+        $keys[] = "tags";
         $keys[] = '_token';
         $keysToBeRemoved = array_flip($keys);
 
@@ -110,11 +128,9 @@ class ItemController extends AbstractController
         $oldCustomAttributes = $item->getItemAttributes();
 
         $form->handleRequest($request);
-
+        // dd($form);
 
         if ($form->isSubmitted() && $form->isValid()) {
-            // dump($request->request->all());
-            // dd($customAttributes);
             foreach($oldCustomAttributes as $oldItemAttribute) {
                 $item->removeItemAttribute($oldItemAttribute);
             }
