@@ -17,7 +17,7 @@ use Symfony\Component\Routing\Attribute\Route;
 
 class HomeController extends AbstractController
 {
-    #[Route('/', name: 'app_home')]
+    #[Route('/', name: 'app_home', methods: [Request::METHOD_GET])]
     public function index(ItemRepository $itemRepository, ItemCollectionRepository $itemCollectionRepository, TagRepository $tagRepository): Response
     {
         $items = $itemRepository->findAll();
@@ -31,7 +31,7 @@ class HomeController extends AbstractController
         ]);
     }
 
-    #[Route('/search', name: 'app_search')]
+    #[Route('/search', name: 'app_search', methods: [Request::METHOD_GET])]
     public function search(Request $request, ItemRepository $itemRepository, ItemCollectionRepository $itemCollectionRepository)
     {
         $query = ($request->query->get('query'));

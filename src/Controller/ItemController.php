@@ -23,7 +23,7 @@ class ItemController extends AbstractController
     }
 
 
-    #[Route('/items', name: 'app_items')]
+    #[Route('/items', name: 'app_items', methods: [Request::METHOD_GET])]
     public function index(): Response
     {
         return $this->render('item/index.html.twig', [
@@ -31,7 +31,7 @@ class ItemController extends AbstractController
         ]);
     }
 
-    #[Route('/items/search', name: 'app_items_by_tag')]
+    #[Route('/items/search', name: 'app_items_by_tag', methods: [Request::METHOD_GET])]
     public function showByTag(Request $request, TagRepository $tagRepository, ItemRepository $itemRepository,): Response
     {
         $queryTag = ($request->query->get('tag'));
@@ -46,7 +46,7 @@ class ItemController extends AbstractController
         ]);
     }
 
-    #[Route('/item/{id}', name: 'app_item')]
+    #[Route('/item/{id}', name: 'app_item', methods: [Request::METHOD_GET])]
     public function show(Item $item): Response
     {
         // dd($item);
@@ -57,7 +57,7 @@ class ItemController extends AbstractController
 
 
 
-    #[Route('/items/create', name: 'app_item_create', methods: ['POST', 'GET'])]
+    #[Route('/items/create', name: 'app_item_create', methods: [Request::METHOD_POST, Request::METHOD_GET])]
     public function create(Request $request, ItemCollectionRepository $rep): Response
     {
         $itemCollection = $rep->findAll();
@@ -107,7 +107,7 @@ class ItemController extends AbstractController
     }
 
 
-    #[Route('/items/{id}/update', name: 'app_item_update')]
+    #[Route('/items/{id}/update', name: 'app_item_update', methods: [Request::METHOD_POST, Request::METHOD_GET])]
     public function update(Request $request, Item $item): Response
     {
         $form = $this->createForm(ItemUpdateType::class,  $item, ['allow_extra_fields' => true]);
@@ -157,7 +157,7 @@ class ItemController extends AbstractController
     }
 
 
-    #[Route('/items/{id}/delete', name: 'app_item_delete')]
+    #[Route('/items/{id}/delete', name: 'app_item_delete', methods: [Request::METHOD_POST, Request::METHOD_GET])]
     public function delete(Item $item): Response
     {
         $this->entityManager->remove($item);

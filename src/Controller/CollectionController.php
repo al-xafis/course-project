@@ -17,7 +17,7 @@ class CollectionController extends AbstractController
     public function __construct(private EntityManagerInterface $entityManager) {
     }
 
-    #[Route('/collections', name: 'app_collections')]
+    #[Route('/collections', name: 'app_collections', methods: [Request::METHOD_GET])]
     public function index(): Response
     {
         return $this->render('collection/index.html.twig', [
@@ -26,7 +26,7 @@ class CollectionController extends AbstractController
     }
 
 
-    #[Route('/collection/get', name: 'app_collection_get', methods: ['POST'])]
+    #[Route('/collection/get', name: 'app_collection_get', methods: [Request::METHOD_POST])]
     public function sendCollection(Request $request, ItemCollectionRepository $rep): Response
     {
 
@@ -46,7 +46,7 @@ class CollectionController extends AbstractController
 
     }
 
-    #[Route('/collection/{id}', name: 'app_collection')]
+    #[Route('/collection/{id}', name: 'app_collection', methods: [Request::METHOD_GET])]
     public function show(ItemCollection $itemCollection): Response
     {
 
