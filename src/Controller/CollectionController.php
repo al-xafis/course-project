@@ -61,12 +61,16 @@ class CollectionController extends AbstractController
     #[Route('/collections/create', name: 'app_collection_create', methods: [Request::METHOD_GET, Request::METHOD_POST])]
     public function create(Request $request): Response
     {
+        $this->denyAccessUnlessGranted('IS_AUTHENTICATED');
+
         $collection = new ItemCollection();
+        $owner = $this->getUser();
 
         $form = $this->createForm(CollectionType::class,  $collection);
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
+            $collection->setOwner($owner);
             $this->entityManager->persist($collection);
             $this->entityManager->flush();
             $this->addFlash('success', 'Collection successfully created');
@@ -82,6 +86,8 @@ class CollectionController extends AbstractController
     #[Route('/collections/{id}/update', name: 'app_collection_update', methods: [Request::METHOD_GET, Request::METHOD_POST])]
     public function update(Request $request, ItemCollection $collection): Response
     {
+        $this->denyAccessUnlessGranted('IS_AUTHENTICATED');
+
         $form = $this->createForm(CollectionType::class,  $collection);
         $form->handleRequest($request);
 
@@ -101,6 +107,8 @@ class CollectionController extends AbstractController
     #[Route('/collections/{id}/delete', name: 'app_collection_delete', methods: [Request::METHOD_GET, Request::METHOD_POST])]
     public function delete(ItemCollection $collection): Response
     {
+        $this->denyAccessUnlessGranted('IS_AUTHENTICATED');
+
         $this->entityManager->remove($collection);
         $this->entityManager->flush();
         $this->addFlash('success', 'Collection successfully deleted');

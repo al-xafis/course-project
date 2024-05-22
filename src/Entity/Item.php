@@ -40,6 +40,9 @@ class Item
     #[ORM\OneToMany(targetEntity: Tag::class, mappedBy: 'item', orphanRemoval: true, cascade: ["persist"])]
     private Collection $tags;
 
+    #[ORM\ManyToOne(inversedBy: 'items')]
+    private ?User $owner = null;
+
 
     public function __construct()
     {
@@ -132,6 +135,18 @@ class Item
                 $tag->setItem(null);
             }
         }
+
+        return $this;
+    }
+
+    public function getOwner(): ?User
+    {
+        return $this->owner;
+    }
+
+    public function setOwner(?User $owner): static
+    {
+        $this->owner = $owner;
 
         return $this;
     }

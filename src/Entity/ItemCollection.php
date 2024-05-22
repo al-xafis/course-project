@@ -47,6 +47,9 @@ class ItemCollection
     #[ORM\OneToMany(targetEntity: Item::class, mappedBy: 'itemCollection', orphanRemoval: true)]
     private Collection $items;
 
+    #[ORM\ManyToOne(inversedBy: 'itemCollections')]
+    private ?User $owner = null;
+
 
 
     public function __construct()
@@ -151,6 +154,18 @@ class ItemCollection
                 $item->setItemCollection(null);
             }
         }
+
+        return $this;
+    }
+
+    public function getOwner(): ?User
+    {
+        return $this->owner;
+    }
+
+    public function setOwner(?User $owner): static
+    {
+        $this->owner = $owner;
 
         return $this;
     }

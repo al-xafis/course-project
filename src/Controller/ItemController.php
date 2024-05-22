@@ -60,6 +60,8 @@ class ItemController extends AbstractController
     #[Route('/items/create', name: 'app_item_create', methods: [Request::METHOD_POST, Request::METHOD_GET])]
     public function create(Request $request, ItemCollectionRepository $rep): Response
     {
+        $this->denyAccessUnlessGranted('IS_AUTHENTICATED');
+
         $itemCollection = $rep->findAll();
         if (!$itemCollection) {
             $this->addFlash('warning', 'Please create at least one collection before creating an Item');
@@ -67,6 +69,7 @@ class ItemController extends AbstractController
         }
 
         $item = new Item();
+        $owner = $this->getUser();
 
         $form = $this->createForm(ItemType::class,  $item, ['action' => $this->generateUrl('app_item_create'), 'allow_extra_fields' => true] );
 
@@ -74,6 +77,7 @@ class ItemController extends AbstractController
         $keys = $metadata->getFieldNames();
         $keys[] = "itemCollection";
         $keys[] = "tags";
+        $keys[] = "owner";
         $keys[] = '_token';
         $keys = array_flip($keys);
 
@@ -94,7 +98,7 @@ class ItemController extends AbstractController
                     $item->addItemAttribute($itemAttribute);
                 }
             }
-
+            $item->setOwner($owner);
             $this->entityManager->persist($item);
             $this->entityManager->flush();
             $this->addFlash('success', 'Item successfully created');
@@ -110,12 +114,15 @@ class ItemController extends AbstractController
     #[Route('/items/{id}/update', name: 'app_item_update', methods: [Request::METHOD_POST, Request::METHOD_GET])]
     public function update(Request $request, Item $item): Response
     {
+        $this->denyAccessUnlessGranted('IS_AUTHENTICATED');
+
         $form = $this->createForm(ItemUpdateType::class,  $item, ['allow_extra_fields' => true]);
 
         $metadata = $this->entityManager->getClassMetadata(Item::class);
         $keys = $metadata->getFieldNames();
         $keys[] = "itemCollection";
         $keys[] = "tags";
+        $keys[] = "owner";
         $keys[] = '_token';
         $keysToBeRemoved = array_flip($keys);
 
@@ -160,6 +167,8 @@ class ItemController extends AbstractController
     #[Route('/items/{id}/delete', name: 'app_item_delete', methods: [Request::METHOD_POST, Request::METHOD_GET])]
     public function delete(Item $item): Response
     {
+        $this->denyAccessUnlessGranted('IS_AUTHENTICATED');
+
         $this->entityManager->remove($item);
         $this->entityManager->flush();
         $this->addFlash('success', 'Item successfully deleted');
