@@ -5,7 +5,10 @@ namespace App\Form;
 use App\Entity\Item;
 use App\Entity\ItemAttribute;
 use App\Entity\ItemCollection;
+use App\Repository\ItemCollectionRepository;
+use Doctrine\ORM\QueryBuilder;
 use Symfony\Bridge\Doctrine\Form\Type\EntityType;
+use Symfony\Bundle\SecurityBundle\Security;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\CollectionType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
@@ -15,9 +18,14 @@ use Symfony\Component\Form\FormEvents;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 
 class ItemUpdateType extends AbstractType
+
 {
+    public function __construct(private ItemCollectionRepository $ItemCollectionRepository, private Security $security){}
+
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
+        $owner = $this->security->getUser();
+
         $builder
             ->add('name')
             ->add('tags', CollectionType::class, [
@@ -31,7 +39,13 @@ class ItemUpdateType extends AbstractType
             ->add('itemCollection', EntityType::class, [
                 'class' => ItemCollection::class,
                 'choice_label' => 'name',
+                'query_builder' => function (ItemCollectionRepository $er) use ($owner): QueryBuilder {
+                    return $er->createQueryBuilder('i')
+                        ->where('i.owner = :owner')
+                        ->setParameter('owner', $owner);
+                },
             ])
+            ;
 
         ;
 

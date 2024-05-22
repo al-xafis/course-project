@@ -1,0 +1,50 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Hello DashboardController!{% endblock %}
+
+{% block body %}
+    <div class="container px-4">
+
+        <h2 class="mb-4">{{app.user.firstName}}'s Dashboard</h2>
+        <div class="item__header pb-2 border-bottom d-flex justify-content-between">
+            <h3>Items</h3>
+            <a class="btn btn-primary" href="{{ path('app_item_create') }}">New item</a>
+        </div>
+        <div class="row g-5 py-3 row-cols-1 row-cols-lg-3">
+            {% if not items %}
+                <h5>No items yet</h4>
+            {% else %}
+                {% for item in items %}
+                    <div class="Item col">
+                    <h4 class="fs-4 text-body-emphasis title-ellipsis">{{ item.name }}</h4>
+                    {# <p class="description-ellipsis">{{item.tags}}</p> #}
+                    <a href="{{ path('app_item', {id: item.id}) }}" class="icon-link">
+                    View
+                    </a>
+                </div>
+                {% endfor %}
+            {% endif %}
+        </div>
+
+        <div class="collection__header mt-5 pb-2 border-bottom d-flex justify-content-between">
+            <h3>Collections</h3>
+            <a class="btn btn-primary" href="{{ path('app_collection_create') }}">New collection</a>
+        </div>
+        <div class="row g-4 py-3 row-cols-1 row-cols-lg-3">
+            {% if not collections %}
+                <h5>No collections yet</h5>
+            {% else %}
+                {% for collection in collections %}
+                    <div class="Collection col">
+                    <h4 class="fs-4 text-body-emphasis title-ellipsis">{{ collection.name }}</h4>
+                    <p class="description-ellipsis">{{collection.description}}</p>
+                    <a href="{{ path('app_collection', {id: collection.id}) }}" class="icon-link">
+                    View
+                    </a>
+                </div>
+                {% endfor %}
+            {% endif %}
+        </div>
+
+    </div>
+{% endblock %}

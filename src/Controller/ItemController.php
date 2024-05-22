@@ -61,15 +61,16 @@ class ItemController extends AbstractController
     public function create(Request $request, ItemCollectionRepository $rep): Response
     {
         $this->denyAccessUnlessGranted('IS_AUTHENTICATED');
+        $owner = $this->getUser();
 
-        $itemCollection = $rep->findAll();
+        $itemCollection = $rep->findBy(['owner' => $owner]);
         if (!$itemCollection) {
-            $this->addFlash('warning', 'Please create at least one collection before creating an Item');
+            $this->addFlash('warning', 'Please create at least one your own collection before creating an Item');
             return $this->redirectToRoute('app_home');
         }
 
         $item = new Item();
-        $owner = $this->getUser();
+
 
         $form = $this->createForm(ItemType::class,  $item, ['action' => $this->generateUrl('app_item_create'), 'allow_extra_fields' => true] );
 
