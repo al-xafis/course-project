@@ -12,7 +12,10 @@
   {% for attributes in item.itemAttributes %}
     <p>{{attributes.value}}</p>
   {% endfor %}
-  <a class="btn btn-primary" href="{{ path('app_item_update', {id: item.id}) }}">Edit</a>
-  <a class="btn btn-danger" href="{{ path('app_item_delete', {id: item.id}) }}">Delete</a>
+  {% if app.user.email == item.owner.email %}
+    <a class="btn btn-primary" href="{{ path('app_item_update', {id: item.id}) }}">Edit</a>
+    <a class="btn btn-danger" href="{{ path('app_item_delete', {id: item.id}) }}">Delete</a>
+  {% endif %}
+
 </div>
 {% endblock %}

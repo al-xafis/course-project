@@ -16,6 +16,7 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
+use Symfony\Component\Security\Core\Exception\AccessDeniedException;
 
 class ItemController extends AbstractController
 {
@@ -49,9 +50,8 @@ class ItemController extends AbstractController
     #[Route('/item/{id}', name: 'app_item', methods: [Request::METHOD_GET])]
     public function show(Item $item): Response
     {
-        // dd($item);
         return $this->render('item/item.html.twig', [
-            'item' => $item
+            'item' => $item,
         ]);
     }
 
@@ -117,6 +117,11 @@ class ItemController extends AbstractController
     {
         $this->denyAccessUnlessGranted('IS_AUTHENTICATED');
 
+        if ($item->getOwner() !== $this->getUser()) {
+            $this->addFlash('warning', 'Unable to update foreign item');
+            return $this->redirectToRoute('app_home');
+        }
+
         $form = $this->createForm(ItemUpdateType::class,  $item, ['allow_extra_fields' => true]);
 
         $metadata = $this->entityManager->getClassMetadata(Item::class);
@@ -169,6 +174,11 @@ class ItemController extends AbstractController
     public function delete(Item $item): Response
     {
         $this->denyAccessUnlessGranted('IS_AUTHENTICATED');
+
+        if ($item->getOwner() !== $this->getUser()) {
+            $this->addFlash('warning', 'Unable to delete foreign item');
+            return $this->redirectToRoute('app_home');
+        }
 
         $this->entityManager->remove($item);
         $this->entityManager->flush();

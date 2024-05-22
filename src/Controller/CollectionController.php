@@ -49,7 +49,6 @@ class CollectionController extends AbstractController
     #[Route('/collection/{id}', name: 'app_collection', methods: [Request::METHOD_GET])]
     public function show(ItemCollection $itemCollection): Response
     {
-
         return $this->render('collection/collection.html.twig', [
             'collection' => $itemCollection
         ]);
@@ -88,6 +87,11 @@ class CollectionController extends AbstractController
     {
         $this->denyAccessUnlessGranted('IS_AUTHENTICATED');
 
+        if ($collection->getOwner() !== $this->getUser()) {
+            $this->addFlash('warning', 'Unable to update foreign collection');
+            return $this->redirectToRoute('app_home');
+        }
+
         $form = $this->createForm(CollectionType::class,  $collection);
         $form->handleRequest($request);
 
@@ -108,6 +112,11 @@ class CollectionController extends AbstractController
     public function delete(ItemCollection $collection): Response
     {
         $this->denyAccessUnlessGranted('IS_AUTHENTICATED');
+
+        if ($collection->getOwner() !== $this->getUser()) {
+            $this->addFlash('warning', 'Unable to delete foreign collection');
+            return $this->redirectToRoute('app_home');
+        }
 
         $this->entityManager->remove($collection);
         $this->entityManager->flush();
