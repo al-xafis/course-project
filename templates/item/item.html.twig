@@ -12,6 +12,10 @@
   {% for attributes in item.itemAttributes %}
     <p>{{attributes.value}}</p>
   {% endfor %}
+  <div class="comment-section">
+    {# <textarea name="comment-area" id="comment-area"></textarea> #}
+    <div class="textarea" tabindex="0" role="textbox" aria-multiline="true" contenteditable="PLAINTEXT-ONLY" data-role="editable" aria-label="Join the discussion…" style="overflow: auto; overflow-wrap: break-word; max-height: 350px;"><p><br></p></div>
+  </div>
   {% if app.user.email == item.owner.email %}
     <a class="btn btn-primary" href="{{ path('app_item_update', {id: item.id}) }}">Edit</a>
     <a class="btn btn-danger" href="{{ path('app_item_delete', {id: item.id}) }}">Delete</a>
