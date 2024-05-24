@@ -12,9 +12,24 @@
   {% for attributes in item.itemAttributes %}
     <p>{{attributes.value}}</p>
   {% endfor %}
-  <div class="comment-section">
-    {# <textarea name="comment-area" id="comment-area"></textarea> #}
-    <div class="textarea" tabindex="0" role="textbox" aria-multiline="true" contenteditable="PLAINTEXT-ONLY" data-role="editable" aria-label="Join the discussion…" style="overflow: auto; overflow-wrap: break-word; max-height: 350px;"><p><br></p></div>
+  <div class="comment-section mt-2">
+
+      <div class="comment-wrapper">
+        {% for comment in item.comments %}
+          <div class="comment mb-4">
+            <h6 class="fw-bold mb-1">{{ comment.user.firstName }} {{ comment.user.lastName}} </h6>
+            <p class="small">{{ comment.comment }}</p>
+          </div>
+        {% endfor %}
+      </div>
+
+      {{ form_start(form) }}
+        {{ form_errors(form) }}
+        {{ form_row(form.comment) }}
+        {{ form_rest(form) }}
+        <button type="submit" class="btn btn-primary">Comment</button>
+      {{ form_end(form) }}
+
   </div>
   {% if app.user.email == item.owner.email %}
     <a class="btn btn-primary" href="{{ path('app_item_update', {id: item.id}) }}">Edit</a>
@@ -22,4 +37,31 @@
   {% endif %}
 
 </div>
+<script>
+    {# const url = new URL('http://localhost:3000/.well-known/mercure');
+    url.searchParams.append('topic', '/comments'); #}
+
+    const eventSource = new EventSource("{{ mercure('/comments')|escape('js') }}");
+    eventSource.onmessage = event => {
+      // Will be called every time an update is published by the server
+      let data = JSON.parse(event.data);
+
+      let commentWrapper = document.querySelector('.comment-wrapper');
+      let comment = document.createElement('div');
+      comment.className = "comment mb-4"
+
+      let author = document.createElement('h6');
+      author.className = "fw-bold mb-1"
+      author.textContent = data['author_first_name'] + ' ' + data['author_last_name'];
+      comment.appendChild(author);
+
+      let p = document.createElement('p');
+      p.className = "small";
+      p.textContent = data['comment']
+
+      comment.appendChild(p);
+      commentWrapper.appendChild(comment);
+}
+
+</script>
 {% endblock %}

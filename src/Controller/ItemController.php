@@ -2,8 +2,10 @@
 
 namespace App\Controller;
 
+use App\Entity\Comment;
 use App\Entity\Item;
 use App\Entity\ItemAttribute;
+use App\Form\CommentType;
 use App\Form\ItemType;
 use App\Form\ItemUpdateType;
 use App\Form\Type\CustomCollectionType;
@@ -15,6 +17,8 @@ use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\Mercure\HubInterface;
+use Symfony\Component\Mercure\Update;
 use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\Security\Core\Exception\AccessDeniedException;
 
@@ -47,10 +51,47 @@ class ItemController extends AbstractController
         ]);
     }
 
-    #[Route('/item/{id}', name: 'app_item', methods: [Request::METHOD_GET])]
-    public function show(Item $item): Response
+    // #[Route('/item/{id}', name: 'app_item', methods: [Request::METHOD_GET])]
+    // public function show(Item $item): Response
+    // {
+    //     return $this->render('item/item.html.twig', [
+    //         'item' => $item,
+    //     ]);
+    // }
+
+    #[Route('/item/{id}', name: 'app_item', methods: [Request::METHOD_POST, Request::METHOD_GET])]
+    public function comment(Request $request, Item $item, HubInterface $hub): Response
     {
+        $user = $this->getUser();
+        // dd($user);
+        $comment = new Comment();
+        $form = $this->createForm(CommentType::class,  $comment);
+
+        $form->handleRequest($request);
+        // dd($form);
+
+        if ($form->isSubmitted() && $form->isValid()) {
+            // dd($comment);
+            $comment->setUser($user);
+            $comment->setItem($item);
+            $this->entityManager->persist($comment);
+            $this->entityManager->flush();
+
+            $update = new Update(
+                '/comments',
+                json_encode(['comment' => $comment->getComment(),
+                            'author_first_name' => $user->getFirstName(),
+                            'author_last_name' => $user->getLastName()])
+            );
+
+
+            $hub->publish($update);
+            // $this->addFlash('success', 'Item successfully updated');
+            // $this->redirectToRoute('app_items');
+        }
+        // dd($item->getItemAttributes()->getValues());
         return $this->render('item/item.html.twig', [
+            'form' => $form,
             'item' => $item,
         ]);
     }
@@ -186,6 +227,8 @@ class ItemController extends AbstractController
 
         return $this->redirectToRoute('app_items');
     }
+
+
 
 
 }
