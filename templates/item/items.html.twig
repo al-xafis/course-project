@@ -3,13 +3,24 @@
 {% block title %}Item{% endblock %}
 
 {% block body %}
-<div class="container">
-  {% if items %}
-  {% for item in items %}
-    {{item.name}}
-  {% endfor %}
-  {% else %}
-  No items
-  {% endif %}
-</div>
+<div class="container px-4 py-5">
+        <div class="item__header pb-2 border-bottom d-flex justify-content-between">
+            <h3>Items by tag</h3>
+        </div>
+        <div class="row g-5 py-3 row-cols-1 row-cols-lg-3">
+                {% if not items %}
+                    <h5 class="fw-normal">No items yet</h4>
+                {% else %}
+                    {% for item in items %}
+                        <div class="Item col">
+                        <h4 class="fs-4 text-body-emphasis title-ellipsis">{{ item.name }}</h4>
+                        {# <p class="description-ellipsis">{{item.tags}}</p> #}
+                        <a href="{{ path('app_item', {id: item.id}) }}" class="icon-link">
+                        View
+                        </a>
+                    </div>
+                    {% endfor %}
+                {% endif %}
+            </div>
+    </div>
 {% endblock %}

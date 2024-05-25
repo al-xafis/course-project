@@ -27,6 +27,14 @@ class ItemRepository extends ServiceEntityRepository
             ->getResult();
     }
 
+    public function findLatestItems() {
+        return $this->createQueryBuilder('i')
+            ->orderBy('i.createdAt', 'DESC')
+            ->setMaxResults(6)
+            ->getQuery()
+            ->getResult();
+    }
+
 
     //    /**
     //     * @return Item[] Returns an array of Item objects

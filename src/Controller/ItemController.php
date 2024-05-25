@@ -29,10 +29,12 @@ class ItemController extends AbstractController
 
 
     #[Route('/items', name: 'app_items', methods: [Request::METHOD_GET])]
-    public function index(): Response
+    public function index(ItemRepository $itemRepository): Response
     {
+        $items = $itemRepository->findAll();
+
         return $this->render('item/index.html.twig', [
-            'controller_name' => 'ItemController',
+            'items' => $items,
         ]);
     }
 
@@ -60,18 +62,15 @@ class ItemController extends AbstractController
     // }
 
     #[Route('/item/{id}', name: 'app_item', methods: [Request::METHOD_POST, Request::METHOD_GET])]
-    public function comment(Request $request, Item $item, HubInterface $hub): Response
+    public function show(Request $request, Item $item, HubInterface $hub): Response
     {
         $user = $this->getUser();
-        // dd($user);
         $comment = new Comment();
         $form = $this->createForm(CommentType::class,  $comment);
 
         $form->handleRequest($request);
-        // dd($form);
 
         if ($form->isSubmitted() && $form->isValid()) {
-            // dd($comment);
             $comment->setUser($user);
             $comment->setItem($item);
             $this->entityManager->persist($comment);
@@ -84,12 +83,9 @@ class ItemController extends AbstractController
                             'author_last_name' => $user->getLastName()])
             );
 
-
             $hub->publish($update);
-            // $this->addFlash('success', 'Item successfully updated');
-            // $this->redirectToRoute('app_items');
         }
-        // dd($item->getItemAttributes()->getValues());
+
         return $this->render('item/item.html.twig', [
             'form' => $form,
             'item' => $item,
@@ -132,6 +128,7 @@ class ItemController extends AbstractController
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
+            // dd($customAttributes);
             if (isset($customAttributes)) {
                 foreach($customAttributes as $name => $value) {
                     $itemAttribute = new ItemAttribute();
@@ -144,6 +141,7 @@ class ItemController extends AbstractController
             $this->entityManager->persist($item);
             $this->entityManager->flush();
             $this->addFlash('success', 'Item successfully created');
+            return $this->redirectToRoute('app_items');
         }
 
         return $this->render('item/form.html.twig', [
@@ -194,6 +192,7 @@ class ItemController extends AbstractController
                     $itemAttribute->setName($name);
                     $itemAttribute->setValue($value);
                     $item->addItemAttribute($itemAttribute);
+                    $item->setUpdatedAt(new \DateTime());
                 }
             }
 

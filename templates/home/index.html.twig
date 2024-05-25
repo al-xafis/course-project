@@ -4,10 +4,13 @@
 
 {% block body %}
     <div class="container px-4 py-5">
-        <h3 class="pb-2 border-bottom">Latest Items</h3>
+        <div class="item__header pb-2 border-bottom d-flex justify-content-between">
+            <h3>Latest Items</h3>
+            <a class="btn btn-primary" href="{{ path('app_items') }}">See all</a>
+        </div>
         <div class="row g-5 py-3 row-cols-1 row-cols-lg-3">
             {% if not items %}
-                <h5>No items yet</h4>
+                <h5 class="fw-normal">No items yet</h4>
             {% else %}
                 {% for item in items %}
                     <div class="Item col">
@@ -33,10 +36,13 @@
 
         </div>
 
-        <h3 class="mt-5 pb-2 border-bottom">Largest collections</h3>
+        <div class="collection__header mt-5 pb-2 border-bottom d-flex justify-content-between">
+            <h3>Largest collections</h3>
+            <a class="btn btn-primary" href="{{ path('app_collections') }}">See all</a>
+        </div>
         <div class="row g-4 py-3 row-cols-1 row-cols-lg-3">
             {% if not collections %}
-                <h5>No collections yet</h5>
+                <h5 class="fw-normal">No collections yet</h5>
             {% else %}
                 {% for collection in collections %}
                     <div class="Collection col">
@@ -67,7 +73,7 @@
                 <li class="tags__item"><a href="{{ path('app_items_by_tag', {'tag': tag.name}) }}">{{ tag.name }}</a></li>
                 {% endfor %}
             {% else %}
-                <h5>No tags yet</h5>
+                <h5 class="fw-normal">No tags yet</h5>
             {% endif %}
             </ul>
         </div>

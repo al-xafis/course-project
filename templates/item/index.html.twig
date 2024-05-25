@@ -3,18 +3,24 @@
 {% block title %}Hello ItemController!{% endblock %}
 
 {% block body %}
-<style>
-    .example-wrapper { margin: 1em auto; max-width: 800px; width: 95%; font: 18px/1.5 sans-serif; }
-    .example-wrapper code { background: #F5F5F5; padding: 2px 6px; }
-</style>
-
-<div class="example-wrapper">
-    <h1>Hello {{ controller_name }}! ✅</h1>
-
-    This friendly message is coming from:
-    <ul>
-        <li>Your controller at <code>/Users/al-khafis/myhtdocs/tasks/Course/src/Controller/ItemController.php</code></li>
-        <li>Your template at <code>/Users/al-khafis/myhtdocs/tasks/Course/templates/item/index.html.twig</code></li>
-    </ul>
-</div>
+    <div class="container px-4 py-5">
+        <div class="item__header pb-2 border-bottom d-flex justify-content-between">
+            <h3>Items</h3>
+        </div>
+        <div class="row g-5 py-3 row-cols-1 row-cols-lg-3">
+                {% if not items %}
+                    <h5 class="fw-normal">No items yet</h4>
+                {% else %}
+                    {% for item in items %}
+                        <div class="Item col">
+                        <h4 class="fs-4 text-body-emphasis title-ellipsis">{{ item.name }}</h4>
+                        {# <p class="description-ellipsis">{{item.tags}}</p> #}
+                        <a href="{{ path('app_item', {id: item.id}) }}" class="icon-link">
+                        View
+                        </a>
+                    </div>
+                    {% endfor %}
+                {% endif %}
+            </div>
+    </div>
 {% endblock %}

@@ -20,10 +20,12 @@ class HomeController extends AbstractController
     #[Route('/', name: 'app_home', methods: [Request::METHOD_GET])]
     public function index(ItemRepository $itemRepository, ItemCollectionRepository $itemCollectionRepository, TagRepository $tagRepository): Response
     {
-        $items = $itemRepository->findAll();
-        $collections = $itemCollectionRepository->findAll();
-        $tags = $tagRepository->findAll();
-        // dd($items);
+        $items = $itemRepository->findLatestItems();
+        // $collections = $itemCollectionRepository->findAll();
+        $collections = $itemCollectionRepository->findLargestCollections();
+        $tags = $tagRepository->findUniqueAll();
+        // dd($tags);
+
         return $this->render('home/index.html.twig', [
             'items' => $items,
             'collections' => $collections,

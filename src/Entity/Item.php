@@ -6,12 +6,16 @@ use App\Repository\ItemRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
+use Doctrine\ORM\Mapping\HasLifecycleCallbacks;
 use Symfony\Component\Validator\Constraints as Assert;
 
 #[ORM\Index(name: "item_search_idx", columns: ["name"], flags: ['fulltext'])]
 #[ORM\Entity(repositoryClass: ItemRepository::class)]
+#[HasLifecycleCallbacks]
 class Item
 {
+    use TimestampableTrait;
+
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]

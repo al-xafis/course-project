@@ -18,10 +18,12 @@ class CollectionController extends AbstractController
     }
 
     #[Route('/collections', name: 'app_collections', methods: [Request::METHOD_GET])]
-    public function index(): Response
+    public function index(ItemCollectionRepository $itemCollectionRepository): Response
     {
+        $collections = $itemCollectionRepository->findAll();
+
         return $this->render('collection/index.html.twig', [
-            'controller_name' => 'CollectionController',
+            'collections' => $collections,
         ]);
     }
 
@@ -73,6 +75,7 @@ class CollectionController extends AbstractController
             $this->entityManager->persist($collection);
             $this->entityManager->flush();
             $this->addFlash('success', 'Collection successfully created');
+            return $this->redirectToRoute('app_home');
         }
 
         return $this->render('collection/form.html.twig', [
@@ -98,6 +101,7 @@ class CollectionController extends AbstractController
         if ($form->isSubmitted() && $form->isValid()) {
             $this->entityManager->flush();
             $this->addFlash('success', 'Collection successfully updated');
+            return $this->redirectToRoute('app_home');
         }
 
         return $this->render('collection/form.html.twig', [
@@ -119,6 +123,20 @@ class CollectionController extends AbstractController
         }
 
         $this->entityManager->remove($collection);
+        $this->entityManager->flush();
+        $this->addFlash('success', 'Collection successfully deleted');
+
+        return $this->redirectToRoute('app_collections');
+    }
+
+    #[Route('/collections/delete/all', name: 'app_collection_delete_all', methods: [Request::METHOD_GET, Request::METHOD_POST])]
+    public function deleteAll(ItemCollectionRepository $itemCollectionRepository): Response
+    {
+
+        $collections = $itemCollectionRepository->findAll();
+        foreach($collections as $collection) {
+            $this->entityManager->remove($collection);
+        }
         $this->entityManager->flush();
         $this->addFlash('success', 'Collection successfully deleted');
 

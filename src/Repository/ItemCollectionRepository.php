@@ -24,6 +24,24 @@ class ItemCollectionRepository extends ServiceEntityRepository
             ->getResult();
     }
 
+    public function findLargestCollections() {
+
+        $conn = $this->getEntityManager()->getConnection();
+
+        $sql = '
+        SELECT ic.*
+        FROM item_collection ic
+        INNER JOIN item i ON ic.id = i.item_collection_id
+        GROUP BY 1
+        ORDER BY count(i.id) DESC
+        LIMIT 5;
+        ';
+
+        $resultSet = $conn->executeQuery($sql);
+        return $resultSet->fetchAllAssociative();
+
+    }
+
     //    /**
     //     * @return ItemCollection[] Returns an array of ItemCollection objects
     //     */
