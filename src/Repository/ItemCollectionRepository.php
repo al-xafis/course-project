@@ -24,6 +24,22 @@ class ItemCollectionRepository extends ServiceEntityRepository
             ->getResult();
     }
 
+    public function FindOneByIdJoined(int $itemId) {
+        $em = $this->getEntityManager();
+
+        $query = $em->createQuery(
+            '
+            SELECT ic, ct, at
+            FROM App\Entity\ItemCollection ic
+            INNER JOIN ic.category ct
+            INNER JOIN ic.customItemAttributes at
+            WHERE ic.id = :id
+            '
+        )->setParameter('id', $itemId);
+
+        return $query->getOneOrNullResult();
+    }
+
     public function findLargestCollections() {
 
         $conn = $this->getEntityManager()->getConnection();

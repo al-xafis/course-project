@@ -27,6 +27,23 @@ class ItemRepository extends ServiceEntityRepository
             ->getResult();
     }
 
+    public function FindOneByIdJoined(int $itemId) {
+        $em = $this->getEntityManager();
+
+        $query = $em->createQuery(
+            '
+            SELECT i, ic, t, at
+            FROM App\Entity\Item i
+            INNER JOIN i.itemCollection ic
+            INNER JOIN i.tags t
+            INNER JOIN i.itemAttributes at
+            WHERE i.id = :id
+            '
+        )->setParameter('id', $itemId);
+
+        return $query->getOneOrNullResult();
+    }
+
     public function findLatestItems() {
         return $this->createQueryBuilder('i')
             ->orderBy('i.createdAt', 'DESC')

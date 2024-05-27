@@ -62,8 +62,9 @@ class ItemController extends AbstractController
     // }
 
     #[Route('/item/{id}', name: 'app_item', methods: [Request::METHOD_POST, Request::METHOD_GET])]
-    public function show(Request $request, Item $item, HubInterface $hub): Response
+    public function show(Request $request, int $id, ItemRepository $itemRepository, HubInterface $hub): Response
     {
+        $item = $itemRepository->FindOneByIdJoined($id);
         $user = $this->getUser();
         $comment = new Comment();
         $form = $this->createForm(CommentType::class,  $comment);
@@ -76,6 +77,8 @@ class ItemController extends AbstractController
             $this->entityManager->persist($comment);
             $this->entityManager->flush();
 
+
+
             $update = new Update(
                 '/comments',
                 json_encode(['comment' => $comment->getComment(),
@@ -84,6 +87,12 @@ class ItemController extends AbstractController
             );
 
             $hub->publish($update);
+
+            unset($form);
+            unset($comment);
+            $comment = new Comment();
+            $form = $this->createForm(CommentType::class,  $comment);
+
         }
 
         return $this->render('item/item.html.twig', [

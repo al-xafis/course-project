@@ -5,11 +5,19 @@
 {% block body %}
 <div class="container">
   <h2>{{collection.name}}</h2>
-  <p>{{collection.description}}</p>
-  <p>{{collection.category.name}}</p>
+  <p>Description: {{collection.description}}</p>
+  <p>Category: {{collection.category.name}}</p>
+  {% if collection.customItemAttributes %}
+    {% for attribute in collection.customItemAttributes %}
+        <p>Attribute: {{attribute.name}}</p>
+    {% endfor %}
+  {% endif %}
+  <p>Owner: {{collection.owner.firstName}} {{collection.owner.lastName}}</p>
   {% if app.user.email == collection.owner.email %}
-    <a class="btn btn-primary" href="{{ path('app_collection_update', {id: collection.id}) }}">Edit</a>
-    <a class="btn btn-danger" href="{{ path('app_collection_delete', {id: collection.id}) }}">Delete</a>
+    <div class="actions mt-3">
+      <a class="btn btn-primary" href="{{ path('app_collection_update', {id: collection.id}) }}">Edit</a>
+      <a class="btn btn-danger" href="{{ path('app_collection_delete', {id: collection.id}) }}">Delete</a>
+    </div>
   {% endif %}
 </div>
 {% endblock %}

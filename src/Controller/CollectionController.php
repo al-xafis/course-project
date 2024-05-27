@@ -49,8 +49,10 @@ class CollectionController extends AbstractController
     }
 
     #[Route('/collection/{id}', name: 'app_collection', methods: [Request::METHOD_GET])]
-    public function show(ItemCollection $itemCollection): Response
+    public function show(int $id, ItemCollectionRepository $itemCollectionRepository): Response
     {
+        $itemCollection = $itemCollectionRepository->FindOneByIdJoined($id);
+
         return $this->render('collection/collection.html.twig', [
             'collection' => $itemCollection
         ]);
