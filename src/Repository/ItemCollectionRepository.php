@@ -24,18 +24,18 @@ class ItemCollectionRepository extends ServiceEntityRepository
             ->getResult();
     }
 
-    public function FindOneByIdJoined(int $itemId) {
+    public function FindOneByIdJoined(int $collectionId) {
         $em = $this->getEntityManager();
 
         $query = $em->createQuery(
             '
             SELECT ic, ct, at
             FROM App\Entity\ItemCollection ic
-            INNER JOIN ic.category ct
-            INNER JOIN ic.customItemAttributes at
+            LEFT JOIN ic.category ct
+            LEFT JOIN ic.customItemAttributes at
             WHERE ic.id = :id
             '
-        )->setParameter('id', $itemId);
+        )->setParameter('id', $collectionId);
 
         return $query->getOneOrNullResult();
     }

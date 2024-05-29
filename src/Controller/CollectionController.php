@@ -7,6 +7,7 @@ use App\Form\CollectionType;
 use App\Repository\ItemCollectionRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Bundle\SecurityBundle\Security;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -14,7 +15,7 @@ use Symfony\Component\Routing\Attribute\Route;
 
 class CollectionController extends AbstractController
 {
-    public function __construct(private EntityManagerInterface $entityManager) {
+    public function __construct(private EntityManagerInterface $entityManager, private Security $security) {
     }
 
     #[Route('/collections', name: 'app_collections', methods: [Request::METHOD_GET])]
@@ -92,7 +93,7 @@ class CollectionController extends AbstractController
     {
         $this->denyAccessUnlessGranted('IS_AUTHENTICATED');
 
-        if ($collection->getOwner() !== $this->getUser()) {
+        if ($collection->getOwner() !== $this->getUser() && !$this->security->isGranted('ROLE_ADMIN')) {
             $this->addFlash('warning', 'Unable to update foreign collection');
             return $this->redirectToRoute('app_home');
         }
@@ -119,7 +120,7 @@ class CollectionController extends AbstractController
     {
         $this->denyAccessUnlessGranted('IS_AUTHENTICATED');
 
-        if ($collection->getOwner() !== $this->getUser()) {
+        if ($collection->getOwner() !== $this->getUser() && !$this->security->isGranted('ROLE_ADMIN')) {
             $this->addFlash('warning', 'Unable to delete foreign collection');
             return $this->redirectToRoute('app_home');
         }

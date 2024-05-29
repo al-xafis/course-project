@@ -34,7 +34,7 @@
       {% endif %}
 
   </div>
-  {% if app.user and app.user.email == item.owner.email %}
+  {% if (app.user and app.user.email == item.owner.email) or is_granted('ROLE_ADMIN') %}
     <div class="actions mt-3">
       <a class="btn btn-primary" href="{{ path('app_item_update', {id: item.id}) }}">Edit</a>
       <a class="btn btn-danger" href="{{ path('app_item_delete', {id: item.id}) }}">Delete</a>
@@ -43,8 +43,6 @@
 
 </div>
 <script>
-    {# const url = new URL('http://localhost:3000/.well-known/mercure');
-    url.searchParams.append('topic', '/comments'); #}
 
     const eventSource = new EventSource("{{ mercure('/comments')|escape('js') }}");
     eventSource.onmessage = event => {

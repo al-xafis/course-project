@@ -35,8 +35,15 @@ class ItemType extends AbstractType
                 'allow_add' => true,
                 'allow_delete' => true,
                 'by_reference' => false,
-            ])
-            ->add('itemCollection', EntityType::class, [
+            ]);
+
+        if ($this->security->isGranted('ROLE_ADMIN')) {
+            $builder->add('itemCollection', EntityType::class, [
+                'class' => ItemCollection::class,
+                'choice_label' => 'name',
+            ]);
+        } else {
+            $builder->add('itemCollection', EntityType::class, [
                 'class' => ItemCollection::class,
                 'choice_label' => 'name',
                 'query_builder' => function (ItemCollectionRepository $er) use ($owner): QueryBuilder {
@@ -44,8 +51,9 @@ class ItemType extends AbstractType
                         ->where('i.owner = :owner')
                         ->setParameter('owner', $owner);
                 },
-            ])
-            ;
+            ]);
+        }
+
 
 
         $builder->get('itemCollection')->addEventListener(
@@ -85,8 +93,12 @@ class ItemType extends AbstractType
                 $form = $event->getForm();
                 $data = $event->getData();
 
-                // $collection = $this->ItemCollectionRepository->findAll()[0];
-                $collection = $this->ItemCollectionRepository->findBy(['owner' => $owner])[0];
+                if ($this->security->isGranted('ROLE_ADMIN')) {
+                    $collection = $this->ItemCollectionRepository->findAll()[0];
+                } else {
+                    $collection = $this->ItemCollectionRepository->findBy(['owner' => $owner])[0];
+                }
+
                 $collectionId = $collection->getId();
                 if (isset($collection)) {
                     $customItemAttributes = $collection->getCustomItemAttributes()->getValues();

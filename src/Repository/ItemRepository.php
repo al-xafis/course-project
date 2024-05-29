@@ -34,9 +34,9 @@ class ItemRepository extends ServiceEntityRepository
             '
             SELECT i, ic, t, at
             FROM App\Entity\Item i
-            INNER JOIN i.itemCollection ic
-            INNER JOIN i.tags t
-            INNER JOIN i.itemAttributes at
+            LEFT JOIN i.itemCollection ic
+            LEFT JOIN i.tags t
+            LEFT JOIN i.itemAttributes at
             WHERE i.id = :id
             '
         )->setParameter('id', $itemId);

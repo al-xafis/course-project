@@ -15,6 +15,7 @@ use App\Repository\TagRepository;
 use Doctrine\DBAL\Types\TextType;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Bundle\SecurityBundle\Security;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Mercure\HubInterface;
@@ -24,7 +25,7 @@ use Symfony\Component\Security\Core\Exception\AccessDeniedException;
 
 class ItemController extends AbstractController
 {
-    public function __construct(private EntityManagerInterface $entityManager) {
+    public function __construct(private EntityManagerInterface $entityManager, private Security $security) {
     }
 
 
@@ -52,14 +53,6 @@ class ItemController extends AbstractController
             'items' => $items
         ]);
     }
-
-    // #[Route('/item/{id}', name: 'app_item', methods: [Request::METHOD_GET])]
-    // public function show(Item $item): Response
-    // {
-    //     return $this->render('item/item.html.twig', [
-    //         'item' => $item,
-    //     ]);
-    // }
 
     #[Route('/item/{id}', name: 'app_item', methods: [Request::METHOD_POST, Request::METHOD_GET])]
     public function show(Request $request, int $id, ItemRepository $itemRepository, HubInterface $hub): Response
@@ -104,12 +97,17 @@ class ItemController extends AbstractController
 
 
     #[Route('/items/create', name: 'app_item_create', methods: [Request::METHOD_POST, Request::METHOD_GET])]
-    public function create(Request $request, ItemCollectionRepository $rep): Response
+    public function create(Request $request, ItemCollectionRepository $itemCollectionRepository): Response
     {
         $this->denyAccessUnlessGranted('IS_AUTHENTICATED');
         $owner = $this->getUser();
 
-        $itemCollection = $rep->findBy(['owner' => $owner]);
+        if ($this->security->isGranted('ROLE_ADMIN')) {
+            $itemCollection = $itemCollectionRepository->findAll();
+        } else {
+            $itemCollection = $itemCollectionRepository->findBy(['owner' => $owner]);
+        }
+
         if (!$itemCollection) {
             $this->addFlash('warning', 'Please create at least one your own collection before creating an Item');
             return $this->redirectToRoute('app_home');
@@ -165,7 +163,7 @@ class ItemController extends AbstractController
     {
         $this->denyAccessUnlessGranted('IS_AUTHENTICATED');
 
-        if ($item->getOwner() !== $this->getUser()) {
+        if ($item->getOwner() !== $this->getUser() && !$this->security->isGranted('ROLE_ADMIN')) {
             $this->addFlash('warning', 'Unable to update foreign item');
             return $this->redirectToRoute('app_home');
         }
@@ -205,12 +203,11 @@ class ItemController extends AbstractController
                 }
             }
 
-            // $this->entityManager->persist($item);
             $this->entityManager->flush();
             $this->addFlash('success', 'Item successfully updated');
             $this->redirectToRoute('app_items');
         }
-        // dd($item->getItemAttributes()->getValues());
+
         return $this->render('item/update.html.twig', [
             'form' => $form,
             'action' => 'update',
@@ -224,7 +221,7 @@ class ItemController extends AbstractController
     {
         $this->denyAccessUnlessGranted('IS_AUTHENTICATED');
 
-        if ($item->getOwner() !== $this->getUser()) {
+        if ($item->getOwner() !== $this->getUser() && !$this->security->isGranted('ROLE_ADMIN')) {
             $this->addFlash('warning', 'Unable to delete foreign item');
             return $this->redirectToRoute('app_home');
         }
