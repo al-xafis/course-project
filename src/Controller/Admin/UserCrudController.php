@@ -47,6 +47,8 @@ class UserCrudController extends AbstractCrudController
                 ->onlyOnForms()
 
              ,
+            ChoiceField::new('status')
+                ->setChoices(['Active' => 'Active', 'Restricted' => 'Restricted']),
             TextField::new('firstName'),
             TextField::new('lastName'),
             ChoiceField::new('roles')
