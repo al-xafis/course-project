@@ -11,20 +11,20 @@ use Symfony\Component\Routing\Attribute\Route;
 
 class DashboardController extends AbstractController
 {
-    public function __construct(private ItemRepository $itemRepository, private ItemCollectionRepository $itemCollectionRepository, private Security $security) {}
+    public function __construct(private Security $security) {}
 
     #[Route('/dashboard', name: 'app_dashboard')]
-    public function index(): Response
+    public function index(ItemRepository $itemRepository, ItemCollectionRepository $itemCollectionRepository): Response
     {
         $this->denyAccessUnlessGranted('IS_AUTHENTICATED');
 
         if ($this->security->isGranted('ROLE_ADMIN')) {
-            $items = $this->itemRepository->findAll();
-            $collections = $this->itemCollectionRepository->findAll();
+            $items = $itemRepository->findAll();
+            $collections = $itemCollectionRepository->findAll();
         } else {
             $owner = $this->getUser();
-            $items = $this->itemRepository->findBy(['owner' => $owner]);
-            $collections = $this->itemCollectionRepository->findBy(['owner' => $owner]);
+            $items = $itemRepository->findBy(['owner' => $owner]);
+            $collections = $itemCollectionRepository->findBy(['owner' => $owner]);
         }
 
 

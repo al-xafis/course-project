@@ -47,7 +47,7 @@ class ItemCollectionRepository extends ServiceEntityRepository
         $sql = '
         SELECT ic.*
         FROM item_collection ic
-        INNER JOIN item i ON ic.id = i.item_collection_id
+        LEFT JOIN item i ON ic.id = i.item_collection_id
         GROUP BY 1
         ORDER BY count(i.id) DESC
         LIMIT 5;
@@ -57,29 +57,4 @@ class ItemCollectionRepository extends ServiceEntityRepository
         return $resultSet->fetchAllAssociative();
 
     }
-
-    //    /**
-    //     * @return ItemCollection[] Returns an array of ItemCollection objects
-    //     */
-    //    public function findByExampleField($value): array
-    //    {
-    //        return $this->createQueryBuilder('i')
-    //            ->andWhere('i.exampleField = :val')
-    //            ->setParameter('val', $value)
-    //            ->orderBy('i.id', 'ASC')
-    //            ->setMaxResults(10)
-    //            ->getQuery()
-    //            ->getResult()
-    //        ;
-    //    }
-
-    //    public function findOneBySomeField($value): ?ItemCollection
-    //    {
-    //        return $this->createQueryBuilder('i')
-    //            ->andWhere('i.exampleField = :val')
-    //            ->setParameter('val', $value)
-    //            ->getQuery()
-    //            ->getOneOrNullResult()
-    //        ;
-    //    }
 }

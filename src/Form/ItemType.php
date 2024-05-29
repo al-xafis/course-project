@@ -5,7 +5,7 @@ namespace App\Form;
 use App\Entity\Item;
 use App\Entity\ItemCollection;
 use App\Repository\ItemCollectionRepository;
-
+use App\Validator\ItemNameUniquePerUser;
 use Doctrine\ORM\QueryBuilder;
 use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Bundle\SecurityBundle\Security;
@@ -27,7 +27,11 @@ class ItemType extends AbstractType
         $owner = $this->security->getUser();
 
         $builder
-            ->add('name')
+            ->add('name', null, [
+                'constraints' => [
+                    new ItemNameUniquePerUser()
+                ]
+            ])
             ->add('tags', CollectionType::class, [
                 'entry_type' => TagType::class,
                 'entry_options' => ['label' => false],

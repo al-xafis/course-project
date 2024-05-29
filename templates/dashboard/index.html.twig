@@ -17,7 +17,6 @@
                 {% for item in items %}
                     <div class="Item col">
                     <h4 class="fs-4 text-body-emphasis title-ellipsis">{{ item.name }}</h4>
-                    {# <p class="description-ellipsis">{{item.tags}}</p> #}
                     <a href="{{ path('app_item', {id: item.id}) }}" class="icon-link">
                     View
                     </a>

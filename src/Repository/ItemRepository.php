@@ -18,11 +18,9 @@ class ItemRepository extends ServiceEntityRepository
 
     public function search($query) {
         return $this->createQueryBuilder('i')
-            // ->addSelect("MATCH_AGAINST (i.name, :query 'IN NATURAL MODE') as score")
             ->add('where', 'MATCH_AGAINST(i.name, :query) > 0')
             ->setParameter('query', $query)
-            // ->orderBy('score', 'desc')
-            // ->setMaxResults(5)
+            ->setMaxResults(10)
             ->getQuery()
             ->getResult();
     }
@@ -51,30 +49,4 @@ class ItemRepository extends ServiceEntityRepository
             ->getQuery()
             ->getResult();
     }
-
-
-    //    /**
-    //     * @return Item[] Returns an array of Item objects
-    //     */
-    //    public function findByExampleField($value): array
-    //    {
-    //        return $this->createQueryBuilder('i')
-    //            ->andWhere('i.exampleField = :val')
-    //            ->setParameter('val', $value)
-    //            ->orderBy('i.id', 'ASC')
-    //            ->setMaxResults(10)
-    //            ->getQuery()
-    //            ->getResult()
-    //        ;
-    //    }
-
-    //    public function findOneBySomeField($value): ?Item
-    //    {
-    //        return $this->createQueryBuilder('i')
-    //            ->andWhere('i.exampleField = :val')
-    //            ->setParameter('val', $value)
-    //            ->getQuery()
-    //            ->getOneOrNullResult()
-    //        ;
-    //    }
 }

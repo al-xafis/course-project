@@ -5,6 +5,7 @@ namespace App\Form;
 use App\Entity\CollectionCategory;
 use App\Entity\CustomItemAttribute;
 use App\Entity\ItemCollection;
+use App\Validator\CollectionNameUniquePerUser;
 use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 use Symfony\Component\Form\AbstractType;
@@ -17,7 +18,11 @@ class CollectionType extends AbstractType
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
         $builder
-            ->add('name')
+            ->add('name', null, [
+                'constraints' => [
+                    new CollectionNameUniquePerUser()
+                ]
+            ])
             ->add('description')
             ->add('category', EntityType::class, [
                 'class' => CollectionCategory::class,

@@ -15,13 +15,13 @@ use Symfony\Component\Routing\Attribute\Route;
 
 class CollectionController extends AbstractController
 {
-    public function __construct(private EntityManagerInterface $entityManager, private Security $security) {
+    public function __construct(private EntityManagerInterface $entityManager, private Security $security, private ItemCollectionRepository $itemCollectionRepository) {
     }
 
     #[Route('/collections', name: 'app_collections', methods: [Request::METHOD_GET])]
-    public function index(ItemCollectionRepository $itemCollectionRepository): Response
+    public function index(): Response
     {
-        $collections = $itemCollectionRepository->findAll();
+        $collections = $this->itemCollectionRepository->findAll();
 
         return $this->render('collection/index.html.twig', [
             'collections' => $collections,
@@ -30,12 +30,12 @@ class CollectionController extends AbstractController
 
 
     #[Route('/collection/get', name: 'app_collection_get', methods: [Request::METHOD_POST])]
-    public function sendCollection(Request $request, ItemCollectionRepository $rep): Response
+    public function sendCollection(Request $request, ): Response
     {
 
         $id = $request->request->get('collectionId');
         if ($id) {
-            $collection = $rep->find($id);
+            $collection = $this->itemCollectionRepository->find($id);
             $customItemAttributes = $collection->getCustomItemAttributes()->getValues();
             $response = [];
             foreach ($customItemAttributes as $attribute) {
@@ -50,9 +50,9 @@ class CollectionController extends AbstractController
     }
 
     #[Route('/collection/{id}', name: 'app_collection', methods: [Request::METHOD_GET])]
-    public function show(int $id, ItemCollectionRepository $itemCollectionRepository): Response
+    public function show(int $id): Response
     {
-        $itemCollection = $itemCollectionRepository->FindOneByIdJoined($id);
+        $itemCollection = $this->itemCollectionRepository->FindOneByIdJoined($id);
 
         return $this->render('collection/collection.html.twig', [
             'collection' => $itemCollection
@@ -133,10 +133,10 @@ class CollectionController extends AbstractController
     }
 
     #[Route('/collections/delete/all', name: 'app_collection_delete_all', methods: [Request::METHOD_GET, Request::METHOD_POST])]
-    public function deleteAll(ItemCollectionRepository $itemCollectionRepository): Response
+    public function deleteAll(): Response
     {
 
-        $collections = $itemCollectionRepository->findAll();
+        $collections = $this->itemCollectionRepository->findAll();
         foreach($collections as $collection) {
             $this->entityManager->remove($collection);
         }

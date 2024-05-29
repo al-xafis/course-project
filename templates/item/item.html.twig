@@ -46,7 +46,6 @@
 
     const eventSource = new EventSource("{{ mercure('/comments')|escape('js') }}");
     eventSource.onmessage = event => {
-      // Will be called every time an update is published by the server
       let data = JSON.parse(event.data);
 
       let commentWrapper = document.querySelector('.comment-wrapper');

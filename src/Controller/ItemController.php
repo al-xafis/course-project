@@ -25,14 +25,14 @@ use Symfony\Component\Security\Core\Exception\AccessDeniedException;
 
 class ItemController extends AbstractController
 {
-    public function __construct(private EntityManagerInterface $entityManager, private Security $security) {
+    public function __construct(private EntityManagerInterface $entityManager, private Security $security, private ItemRepository $itemRepository) {
     }
 
 
     #[Route('/items', name: 'app_items', methods: [Request::METHOD_GET])]
-    public function index(ItemRepository $itemRepository): Response
+    public function index(): Response
     {
-        $items = $itemRepository->findAll();
+        $items = $this->itemRepository->findAll();
 
         return $this->render('item/index.html.twig', [
             'items' => $items,
@@ -40,7 +40,7 @@ class ItemController extends AbstractController
     }
 
     #[Route('/items/search', name: 'app_items_by_tag', methods: [Request::METHOD_GET])]
-    public function showByTag(Request $request, TagRepository $tagRepository, ItemRepository $itemRepository,): Response
+    public function showByTag(Request $request, TagRepository $tagRepository): Response
     {
         $queryTag = ($request->query->get('tag'));
         $tags = $tagRepository->findBy(['name' => $queryTag]);
@@ -55,9 +55,9 @@ class ItemController extends AbstractController
     }
 
     #[Route('/item/{id}', name: 'app_item', methods: [Request::METHOD_POST, Request::METHOD_GET])]
-    public function show(Request $request, int $id, ItemRepository $itemRepository, HubInterface $hub): Response
+    public function show(Request $request, int $id, HubInterface $hub): Response
     {
-        $item = $itemRepository->FindOneByIdJoined($id);
+        $item = $this->itemRepository->FindOneByIdJoined($id);
         $user = $this->getUser();
         $comment = new Comment();
         $form = $this->createForm(CommentType::class,  $comment);
@@ -187,7 +187,6 @@ class ItemController extends AbstractController
         $oldCustomAttributes = $item->getItemAttributes();
 
         $form->handleRequest($request);
-        // dd($form);
 
         if ($form->isSubmitted() && $form->isValid()) {
             foreach($oldCustomAttributes as $oldItemAttribute) {
