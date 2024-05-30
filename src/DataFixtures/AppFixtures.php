@@ -21,10 +21,13 @@ class AppFixtures extends Fixture
         $coins->setName('Coins');
         $arts = new CollectionCategory();
         $arts->setName('Arts');
+        $other = new CollectionCategory();
+        $other->setName('Other');
 
         $manager->persist($books);
         $manager->persist($coins);
         $manager->persist($arts);
+        $manager->persist($other);
 
         $admin = new User();
         $admin->setEmail('admin@mail.ru');
