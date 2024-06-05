@@ -135,7 +135,6 @@ class ItemController extends AbstractController
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
-            // dd($customAttributes);
             if (isset($customAttributes)) {
                 foreach($customAttributes as $name => $value) {
                     $itemAttribute = new ItemAttribute();

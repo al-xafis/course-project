@@ -11,6 +11,7 @@ use EasyCorp\Bundle\EasyAdminBundle\Field\ChoiceField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\EmailField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\FormField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\IdField;
+use EasyCorp\Bundle\EasyAdminBundle\Field\NumberField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\TextEditorField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\TextField;
 use Symfony\Component\Form\Extension\Core\Type\PasswordType;
@@ -51,6 +52,7 @@ class UserCrudController extends AbstractCrudController
                 ->setChoices(['Active' => 'Active', 'Restricted' => 'Restricted']),
             TextField::new('firstName'),
             TextField::new('lastName'),
+            NumberField::new('age'),
             ChoiceField::new('roles')
                 ->setChoices(['User' => 'ROLE_USER', 'Admin' => 'ROLE_ADMIN'])
                 ->allowMultipleChoices()

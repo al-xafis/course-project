@@ -34,6 +34,7 @@ class AppFixtures extends Fixture
         $admin->setStatus('Active');
         $admin->setFirstName('Admin');
         $admin->setLastName('Admin');
+        $admin->setAge('27');
         $admin->setRoles(['ROLE_USER', 'ROLE_ADMIN']);
         $password = 1;
         $hashedPassword = $this->passwordHasher->hashPassword($admin, $password);

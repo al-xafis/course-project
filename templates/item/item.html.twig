@@ -15,14 +15,18 @@
   <p>Owner: {{item.owner.firstName}} {{item.owner.lastName}}</p>
   <div class="comment-section mt-4">
       <h5>Comments</h5>
-      <div class="comment-wrapper">
-        {% for comment in item.comments %}
-          <div class="comment mb-4">
-            <h6 class="fw-bold mb-1">{{ comment.user.firstName }} {{ comment.user.lastName}} </h6>
-            <p class="small">{{ comment.comment }}</p>
-          </div>
-        {% endfor %}
-      </div>
+      {% if item.comments|length > 0 %}
+        <div class="comment-wrapper">
+          {% for comment in item.comments %}
+            <div class="comment mb-4">
+              <h6 class="fw-bold mb-1">{{ comment.user.firstName }} {{ comment.user.lastName}} </h6>
+              <p class="small">{{ comment.comment }}</p>
+            </div>
+          {% endfor %}
+        </div>
+      {% else %}
+        <p>No comments yet</p>
+      {% endif %}
 
       {% if app.user %}
         {{ form_start(form) }}
@@ -32,6 +36,7 @@
           <button type="submit" class="btn btn-primary">Comment</button>
         {{ form_end(form) }}
       {% endif %}
+
 
   </div>
   {% if (app.user and app.user.email == item.owner.email) or is_granted('ROLE_ADMIN') %}

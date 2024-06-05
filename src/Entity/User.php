@@ -67,6 +67,10 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\Column(length: 20, options: ["default" => 'Active'])]
     private ?string $status = null;
 
+    #[ORM\Column(nullable: true)]
+    #[Assert\Positive]
+    private ?int $age = null;
+
     public function __construct()
     {
         $this->itemCollections = new ArrayCollection();
@@ -271,6 +275,18 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     public function setStatus(string $status): static
     {
         $this->status = $status;
+
+        return $this;
+    }
+
+    public function getAge(): ?int
+    {
+        return $this->age;
+    }
+
+    public function setAge(?int $age): static
+    {
+        $this->age = $age;
 
         return $this;
     }
