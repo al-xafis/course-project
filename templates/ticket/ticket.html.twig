@@ -1,0 +1,14 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Ticket{% endblock %}
+
+{% block body %}
+<div class="container">
+  <h2>{{ticket.summary}}</h2>
+  <p>Priority: {{ticket.priority}}</p>
+  <p>Status: {{ticket.status}}</p>
+  <p>From: {{ticket.link}}</p>
+  <p>Link: <a href="{{ticket.jiraLink}}">Go to Jira</a></p>
+  <p>Owner: {{ticket.reporter.email}}</p>
+</div>
+{% endblock %}

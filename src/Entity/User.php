@@ -71,11 +71,21 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     #[Assert\Positive]
     private ?int $age = null;
 
+    /**
+     * @var Collection<int, Ticket>
+     */
+    #[ORM\OneToMany(targetEntity: Ticket::class, mappedBy: 'reporter')]
+    private Collection $tickets;
+
+    #[ORM\Column(length: 255)]
+    private ?string $jiraId = null;
+
     public function __construct()
     {
         $this->itemCollections = new ArrayCollection();
         $this->items = new ArrayCollection();
         $this->comments = new ArrayCollection();
+        $this->tickets = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -287,6 +297,48 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     public function setAge(?int $age): static
     {
         $this->age = $age;
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, Ticket>
+     */
+    public function getTickets(): Collection
+    {
+        return $this->tickets;
+    }
+
+    public function addTicket(Ticket $ticket): static
+    {
+        if (!$this->tickets->contains($ticket)) {
+            $this->tickets->add($ticket);
+            $ticket->setReporter($this);
+        }
+
+        return $this;
+    }
+
+    public function removeTicket(Ticket $ticket): static
+    {
+        if ($this->tickets->removeElement($ticket)) {
+            // set the owning side to null (unless already changed)
+            if ($ticket->getReporter() === $this) {
+                $ticket->setReporter(null);
+            }
+        }
+
+        return $this;
+    }
+
+    public function getJiraId(): ?string
+    {
+        return $this->jiraId;
+    }
+
+    public function setJiraId(string $jiraId): static
+    {
+        $this->jiraId = $jiraId;
 
         return $this;
     }

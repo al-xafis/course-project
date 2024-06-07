@@ -36,6 +36,7 @@ class AppFixtures extends Fixture
         $admin->setLastName('Admin');
         $admin->setAge('27');
         $admin->setRoles(['ROLE_USER', 'ROLE_ADMIN']);
+        $admin->setJiraId('randomsdifjasoefija93rj3w9jf');
         $password = 1;
         $hashedPassword = $this->passwordHasher->hashPassword($admin, $password);
         $admin->setPassword($hashedPassword);

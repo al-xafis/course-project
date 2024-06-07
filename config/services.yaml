@@ -4,7 +4,11 @@
 # Put parameters here that don't need to change on each machine where the app is deployed
 # https://symfony.com/doc/current/best_practices.html#use-parameters-for-application-configuration
 parameters:
-
+  JIRA_USERNAME: "%env(JIRA_USERNAME)%"
+  JIRA_TOKEN: "%env(JIRA_TOKEN)%"
+  JIRA_URL_CREATE_TICKET: "%env(JIRA_URL_CREATE_TICKET)%"
+  JIRA_URL_CREATE_USER: "%env(JIRA_URL_CREATE_USER)%"
+  JIRA_URL_TICKET: "%env(JIRA_URL_TICKET)%"
 services:
   # default configuration for services in *this* file
   _defaults:

@@ -1,0 +1,13 @@
+<div class="container mt-3">
+  {{ form_start(form) }}
+      {{ form_errors(form) }}
+
+      {{ form_row(form.summary) }}
+      {{ form_row(form.priority) }}
+      {{ form_row(form.status) }}
+      {{ form_row(form.save) }}
+
+      {# <button class="btn btn-primary mt-4" type="submit" formnovalidate>{{action|capitalize}}</button> #}
+
+  {{ form_end(form) }}
+</div>
