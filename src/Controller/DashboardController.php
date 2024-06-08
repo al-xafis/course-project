@@ -18,7 +18,7 @@ class DashboardController extends AbstractController
     public function __construct(private Security $security) {}
 
     #[Route('/dashboard', name: 'app_dashboard')]
-    public function index(Request $request, ItemRepository $itemRepository, ItemCollectionRepository $itemCollectionRepository, TicketRepository $ticketRepository, JiraManager $jira): Response
+    public function index(Request $request, ItemRepository $itemRepository, ItemCollectionRepository $itemCollectionRepository, JiraManager $jira): Response
     {
         $this->denyAccessUnlessGranted('IS_AUTHENTICATED');
 
@@ -33,9 +33,9 @@ class DashboardController extends AbstractController
             $owner = $this->getUser();
             $items = $itemRepository->findBy(['owner' => $owner]);
             $collections = $itemCollectionRepository->findBy(['owner' => $owner]);
-            $tickets = $jira->getTickets($this->security->getUser()->getJiraId(), $limit * ($ticketPage-1), $limit);
+            $tickets = $jira->getTickets($owner->getJiraId(), $limit * ($ticketPage-1), $limit);
         }
-        // $result = $jira->getTickets($this->security->getUser()->getJiraId(), $limit * ($ticketPage-1), $limit);
+
         $totalTickets = $tickets['total'];
         $totalTicketPage = (int) ceil($totalTickets / $limit);
         $tickets = $tickets['issues'];

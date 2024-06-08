@@ -28,13 +28,13 @@ class TicketController extends AbstractController
     #[Route('/ticket/create', name: 'app_ticket_create', methods: [Request::METHOD_GET, Request::METHOD_POST])]
     public function create(Request $request, EntityManagerInterface $entityManager, JiraManager $jira, ParameterBagInterface $params): Response
     {
-        // $this->denyAccessUnlessGranted('IS_AUTHENTICATED');
         $owner = $this->getUser();
         $ticket = new Ticket();
-
         $form = $this->createForm(TicketType::class,  $ticket, ['action' => $this->generateUrl('app_ticket_create')]);
         $form->handleRequest($request);
         if ($form->isSubmitted() && $form->isValid()) {
+            $this->denyAccessUnlessGranted('IS_AUTHENTICATED');
+
             $ticket->setReporter($owner);
             $ticket->setLink($request->headers->get('referer'));
             $result = $jira->createTicket(
