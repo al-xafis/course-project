@@ -21,18 +21,18 @@ class DashboardController extends AbstractController
     {
         $this->denyAccessUnlessGranted('IS_AUTHENTICATED');
 
+        $ticketPage = $request->get('ticketPage', 1);
+        $limit = 3;
+
         if ($this->security->isGranted('ROLE_ADMIN')) {
             $items = $itemRepository->findAll();
             $collections = $itemCollectionRepository->findAll();
-            $tickets = $ticketRepository->findAll();
+            $tickets = $ticketRepository->getTicketsInRange($ticketPage, $limit);
         } else {
             $owner = $this->getUser();
             $items = $itemRepository->findBy(['owner' => $owner]);
             $collections = $itemCollectionRepository->findBy(['owner' => $owner]);
-
-            $ticketPage = $request->get('ticketPage', 1);
-            $limit = 3;
-            $tickets = $ticketRepository->getTicketsInRange($owner, $ticketPage, $limit);
+            $tickets = $ticketRepository->getTicketsInRange($ticketPage, $limit, $owner);
         }
 
         $paginatedTicket = new Paginator($tickets, fetchJoinCollection: true);

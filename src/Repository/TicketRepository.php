@@ -19,7 +19,14 @@ class TicketRepository extends ServiceEntityRepository
         parent::__construct($registry, Ticket::class);
     }
 
-    public function getTicketsInRange(User $reporter, int $page, int $limit) {
+    public function getTicketsInRange(int $page, int $limit, User $reporter=null) {
+        if ($this->security->isGranted('ROLE_ADMIN')) {
+            return $this->createQueryBuilder('t')
+            ->setFirstResult($limit * ($page-1))
+            ->setMaxResults($limit)
+            ;
+        }
+
         return $this->createQueryBuilder('t')
             ->where('t.reporter = :reporter')
             ->setParameter('reporter', $reporter)
