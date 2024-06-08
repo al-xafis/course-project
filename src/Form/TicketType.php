@@ -29,8 +29,8 @@ class TicketType extends AbstractType
                 'choices'  => [
                     'Opened' => 'Opened',
                     'In progress' => 'In progress',
-                    'Rejected' => 'Rejected',
                     'Fixed' => 'Fixed',
+                    'Rejected' => 'Rejected',
                 ],
             ])
             ->add('save', SubmitType::class)

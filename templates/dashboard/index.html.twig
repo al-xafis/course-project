@@ -58,9 +58,9 @@
             {% else %}
                 {% for ticket in tickets %}
                     <div class="ticket col">
-                        <h4 class="fs-4 text-body-emphasis title-ellipsis">{{ ticket.summary }}</h4>
-                        <p class="description-ellipsis">{{ticket.status}}</p>
-                        <p class="description-ellipsis">{{ticket.priority}}</p>
+                        <h4 class="fs-4 text-body-emphasis title-ellipsis">{{ ticket.fields.summary }}</h4>
+                        <p class="description-ellipsis">{{ticket.fields.customfield_10036.value}}</p>
+                        <p class="description-ellipsis">{{ticket.fields.customfield_10038.value}}</p>
                         <a href="{{ path('app_ticket', {id: ticket.id}) }}" class="icon-link">
                         View
                         </a>
@@ -69,14 +69,14 @@
 
             {% endif %}
         </div>
-        {% if tickets|length > 3%}
-        <nav class="d-flex justify-content-center mb-5">
-                    <ul class="pagination">
-                        {% for i in range(1, totalTicketPage) %}
-                            <li class="page-item"><a class="page-link" href="{{path(_currentPath, _currentParams|merge({ticketPage: i}))}}">{{i}}</a></li>
-                        {% endfor %}
-                    </ul>
-                </nav>
+        {% if totalTicketPage > 1%}
+            <nav class="d-flex justify-content-center mb-5">
+                        <ul class="pagination">
+                            {% for i in range(1, totalTicketPage) %}
+                                <li class="page-item"><a class="page-link" href="{{path(_currentPath, _currentParams|merge({ticketPage: i}))}}">{{i}}</a></li>
+                            {% endfor %}
+                        </ul>
+            </nav>
         {% endif %}
 
     </div>

@@ -5,6 +5,7 @@ namespace App\Controller;
 use App\Repository\ItemCollectionRepository;
 use App\Repository\ItemRepository;
 use App\Repository\TicketRepository;
+use App\Service\JiraManager;
 use Doctrine\ORM\Tools\Pagination\Paginator;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Bundle\SecurityBundle\Security;
@@ -17,7 +18,7 @@ class DashboardController extends AbstractController
     public function __construct(private Security $security) {}
 
     #[Route('/dashboard', name: 'app_dashboard')]
-    public function index(Request $request, ItemRepository $itemRepository, ItemCollectionRepository $itemCollectionRepository, TicketRepository $ticketRepository): Response
+    public function index(Request $request, ItemRepository $itemRepository, ItemCollectionRepository $itemCollectionRepository, TicketRepository $ticketRepository, JiraManager $jira): Response
     {
         $this->denyAccessUnlessGranted('IS_AUTHENTICATED');
 
@@ -27,23 +28,23 @@ class DashboardController extends AbstractController
         if ($this->security->isGranted('ROLE_ADMIN')) {
             $items = $itemRepository->findAll();
             $collections = $itemCollectionRepository->findAll();
-            $tickets = $ticketRepository->getTicketsInRange($ticketPage, $limit);
+            $tickets = $jira->getTicketsAll($limit * ($ticketPage-1), $limit);
         } else {
             $owner = $this->getUser();
             $items = $itemRepository->findBy(['owner' => $owner]);
             $collections = $itemCollectionRepository->findBy(['owner' => $owner]);
-            $tickets = $ticketRepository->getTicketsInRange($ticketPage, $limit, $owner);
+            $tickets = $jira->getTickets($this->security->getUser()->getJiraId(), $limit * ($ticketPage-1), $limit);
         }
-
-        $paginatedTicket = new Paginator($tickets, fetchJoinCollection: true);
-        $totalTickets= $paginatedTicket->count();
+        // $result = $jira->getTickets($this->security->getUser()->getJiraId(), $limit * ($ticketPage-1), $limit);
+        $totalTickets = $tickets['total'];
         $totalTicketPage = (int) ceil($totalTickets / $limit);
+        $tickets = $tickets['issues'];
 
 
         return $this->render('dashboard/index.html.twig', [
             'items' => $items,
             'collections' => $collections,
-            'tickets' => $paginatedTicket,
+            'tickets' => $tickets,
             'totalTicketPage' => $totalTicketPage
         ]);
     }

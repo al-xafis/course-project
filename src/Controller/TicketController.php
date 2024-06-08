@@ -62,9 +62,9 @@ class TicketController extends AbstractController
     }
 
     #[Route('/ticket/{id}', name: 'app_ticket', methods: [Request::METHOD_GET])]
-    public function show(int $id, TicketRepository $ticketRepository): Response
+    public function show(int $id, JiraManager $jira): Response
     {
-        $ticket = $ticketRepository->find($id);
+        $ticket = $jira->getTicket($id);
         return $this->render('ticket/ticket.html.twig', [
             'ticket' => $ticket,
         ]);

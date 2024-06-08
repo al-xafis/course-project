@@ -4,11 +4,12 @@
 
 {% block body %}
 <div class="container">
-  <h2>{{ticket.summary}}</h2>
-  <p>Priority: {{ticket.priority}}</p>
-  <p>Status: {{ticket.status}}</p>
-  <p>From: {{ticket.link}}</p>
-  <p>Link: <a href="{{ticket.jiraLink}}">Go to Jira</a></p>
-  <p>Owner: {{ticket.reporter.email}}</p>
+  <h2>{{ticket.fields.summary}}</h2>
+  <p>Priority: {{ticket.fields.customfield_10038.value}}</p>
+  <p>Status: {{ticket.fields.customfield_10036.value}}</p>
+  <p>From: {{ticket.fields.customfield_10037}}</p>
+  <p>Link: <a href="{{app.request.server.get('JIRA_URL_TICKET')}}{{ticket.key}}">Go to Jira</a></p>
+  <p>Owner: {{ticket.fields.reporter.displayName}}</p>
+
 </div>
 {% endblock %}

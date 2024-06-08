@@ -9,6 +9,8 @@ parameters:
   JIRA_URL_CREATE_TICKET: "%env(JIRA_URL_CREATE_TICKET)%"
   JIRA_URL_CREATE_USER: "%env(JIRA_URL_CREATE_USER)%"
   JIRA_URL_TICKET: "%env(JIRA_URL_TICKET)%"
+  JIRA_URL_SEARCH: "%env(JIRA_URL_SEARCH)%"
+  JIRA_URL_GET_TICKET: "%env(JIRA_URL_GET_TICKET)%"
 services:
   # default configuration for services in *this* file
   _defaults:
