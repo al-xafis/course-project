@@ -2,8 +2,10 @@
 
 namespace App\Controller;
 
+use App\Entity\ApiToken;
 use App\Entity\ItemCollection;
 use App\Form\CollectionType;
+use App\Repository\ApiTokenRepository;
 use App\Repository\ItemCollectionRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -49,6 +51,52 @@ class CollectionController extends AbstractController
 
     }
 
+    #[Route('/collection/odoo', name: 'app_collection_get_odoo', methods: [Request::METHOD_GET])]
+    public function sendCollectionOdoo(Request $request, ApiTokenRepository $apiTokenRepository): Response
+    {
+        $token = $request->get('Token');
+        $apiToken = $apiTokenRepository->findOneBy(['token' => $token]);
+        if ($apiToken) {
+            $collectionOwner = $apiToken->getUser();
+            $collections = $this->itemCollectionRepository->findAll(['owner' => $collectionOwner]);
+            $response = [];
+            foreach($collections as $collection) {
+                $response[] = [
+                'name' => $collection->getName(),
+                'description' => $collection->getDescription(),
+                'category' => $collection->getCategory()->getName()
+                ];
+            }
+
+            return new JsonResponse($response);
+        } else {
+            return new Response('Invalid token');
+        }
+
+    }
+
+    #[Route('/collection/getToken', name: 'app_collection_get_token', methods: [Request::METHOD_GET])]
+    public function getToken(ApiTokenRepository $apiTokenRepository): Response
+    {
+        $this->denyAccessUnlessGranted('IS_AUTHENTICATED');
+
+        // remove old tokens if the new one is issued
+        $tokens = $apiTokenRepository->findBy(['user' => $this->getUser()]);
+        if ($tokens) {
+            foreach($tokens as $token) {
+                $this->entityManager->remove($token);
+            }
+        }
+
+        $token = new ApiToken();
+        $token->setToken(bin2hex(random_bytes(60)));
+        $token->setUser($this->getUser());
+        $this->entityManager->persist($token);
+        $this->entityManager->flush();
+        $this->addFlash('success', 'Token: ' . $token->getToken());
+        return $this->redirectToRoute('app_home');
+    }
+
     #[Route('/collection/{id}', name: 'app_collection', methods: [Request::METHOD_GET])]
     public function show(int $id): Response
     {
@@ -58,9 +106,6 @@ class CollectionController extends AbstractController
             'collection' => $itemCollection
         ]);
     }
-
-
-
 
     #[Route('/collections/create', name: 'app_collection_create', methods: [Request::METHOD_GET, Request::METHOD_POST])]
     public function create(Request $request): Response

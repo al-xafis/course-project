@@ -31,7 +31,12 @@
 
         <div class="collection__header mt-5 pb-2 border-bottom d-flex justify-content-between">
             <h3>Collections</h3>
-            <a class="btn btn-primary" href="{{ path('app_collection_create') }}">New collection</a>
+            <div class="collection_actions d-flex gap-3 align-items-center">
+                <form action="{{ path('app_collection_get_token') }}">
+                    <button class="btn btn-primary" type="submit">Get token</button>
+                </form>
+                <a class="btn btn-primary" href="{{ path('app_collection_create') }}">New collection</a>
+            </div>
         </div>
         <div class="row g-4 py-3 row-cols-1 row-cols-lg-3 mb-5">
             {% if not collections %}
