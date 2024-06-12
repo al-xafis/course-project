@@ -64,7 +64,9 @@ class CollectionController extends AbstractController
                 $response[] = [
                 'name' => $collection->getName(),
                 'description' => $collection->getDescription(),
-                'category' => $collection->getCategory()->getName()
+                'category' => $collection->getCategory()->getName(),
+                'item_count' => count($collection->getItems()),
+                'owner' => $collection->getOwner()->getEmail()
                 ];
             }
 
